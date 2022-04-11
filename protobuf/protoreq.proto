@@ -1,0 +1,48 @@
+syntax = "proto2";
+package protobuf;
+
+message PBREQPayment {
+  required string pairhash = 1;
+  required string payorhash = 2;
+  required int32 payment = 3;
+  optional string description = 4;
+}
+
+message PBUserData {
+  required string username = 1;
+  required string usertoken = 2;
+  required string createdAt = 3;
+  optional string email = 4;
+  optional string icon = 5;
+}
+
+message REQlogin {
+  required string username = 1;
+  required string password = 2;
+}
+
+message REQsignup {
+  required string username = 1;
+  required string password = 2;
+  required string email = 3;
+}
+
+message REQasignpair {
+  required string usertoken = 1;
+}
+
+message REQnone {
+}
+
+message REQpairinfo {
+  required string pairhash = 1;
+}
+
+message REQaddpayment {
+  required PBREQPayment payment = 1;
+}
+
+message REQpayinfo {
+  required string payhash = 1;
+}
+

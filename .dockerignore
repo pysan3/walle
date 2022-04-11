@@ -1,0 +1,19 @@
+# Ignore everything
+**
+
+# Allow required files
+!./*.py
+!./pyproject.toml
+!./poetry.lock
+!./.env
+!./alembic.ini
+!./app
+!./protobuf
+!./migration
+!./public
+!./src
+!./*.js
+!./*.json
+
+**/__pycache__*
+./src/lang/*.json

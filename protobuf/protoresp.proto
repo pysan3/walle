@@ -1,0 +1,45 @@
+syntax = "proto2";
+package protobuf;
+
+message PBPairsIndex {
+  required string pairhash = 1;
+  optional bool accepted = 2;
+}
+
+message PBRESPPayment {
+  required string pairhash = 1;
+  required string payorhash = 2;
+  required int32 payment = 3;
+  optional string description = 4;
+  required string createdAt = 5;
+}
+
+message RESPtoken {
+  required bool success = 1;
+  optional string token = 2;
+}
+
+message RESPmypairs {
+  repeated PBPairsIndex pairs = 1;
+}
+
+message RESPsuccess {
+  required bool success = 1;
+  optional string msg = 2;
+}
+
+message RESPpairinfo {
+  repeated string userhashes = 1;
+  optional string name = 2;
+  optional int32 waitingnum = 4;
+  optional string pairhash = 5;
+}
+
+message RESPgetpaymentlist {
+  repeated string payhashlist = 1;
+}
+
+message RESPgetpayinfo {
+  required PBRESPPayment payinfo = 1;
+}
+

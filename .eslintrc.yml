@@ -1,0 +1,49 @@
+root: true
+env:
+  node: true
+  es6: true
+  commonjs: true
+parserOptions:
+  parser: 'babel-eslint'
+extends:
+  - '@vue/airbnb'
+  - 'plugin:vue/vue3-essential'
+  - 'prettier'
+rules:
+  no-extend-native: 'off'
+  func-names: 'off'
+  no-unused-vars: 'off'
+  global-require: 'off'
+  guard-for-in: 'off'
+  no-underscore-dangle: 'off'
+  no-restricted-syntax: 'off'
+  no-param-reassign: 'off'
+  class-methods-use-this: 'off'
+  lines-between-class-members: 'off'
+  no-continue: 'off'
+  no-console: 'off'
+  import/prefer-default-export: 'off'
+  quotes: ['error', 'single']
+  template-curly-spacing: 'off'
+  indent:
+    - error
+    - 2
+    - ignoredNodes: ['TemplateLiteral']
+      SwitchCase: 1
+  max-len:
+    - error
+    - code: 120
+  no-plusplus:
+    - error
+    - allowForLoopAfterthoughts: true
+  no-debugger: 'off'
+  no-alert: 'off'
+  no-shadow: 'off'
+  vue/no-deprecated-slot-attribute: 'off'
+  'import/extensions':
+    - error
+    - 'ignorePackages'
+    - 'js': 'never'
+      'jsx': 'never'
+      'ts': 'never'
+      'tsx': 'never'

@@ -1,0 +1,3 @@
+.github/
+protobuf/*.ts
+*.json
