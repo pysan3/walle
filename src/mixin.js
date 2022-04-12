@@ -15,6 +15,19 @@ export default {
         store.commit('setMyUserInfo', response.data);
       });
     },
+    $_timeInLanguage(time, format) {
+      const date = new Date(time);
+      const lpad = a => `00${a}`.slice(-2);
+      const correspond = {
+        '%Y': date.getFullYear(),
+        '%m': date.getMonth() + 1,
+        '%d': date.getDate(),
+        '%H': lpad(date.getHours()),
+        '%M': lpad(date.getMinutes()),
+        '%S': lpad(date.getSeconds()),
+      };
+      return Object.entries(correspond).reduce((c, [k, v]) => c.replaceAll(k, v), format);
+    },
     $_checkIsLoggedin() {
       if (store.getters.getIsLoggedIn) return true;
       return Axios.post('/api/loggedin', {})
@@ -34,7 +47,13 @@ export default {
       return this.ionicons[this.$_kebab2camel(iconname)];
     },
     $c(n) {
-      return `${this.$i('logo-yen')} ${n.toLocaleString('en-US')}`;
+      return n.toLocaleString('en-US');
+    },
+    $_pname(name) {
+      return (name || '')
+        .replace(store.getters.getMyUserInfo.username, '')
+        .trim()
+        .replace(' ', ',');
     },
     async $_controlMenu(menuname, status) {
       switch (status) {
@@ -50,11 +69,9 @@ export default {
       }
     },
     $_getUserInfo(userhash) {
-      console.log(userhash);
-      console.log(store.getters.getMyUserInfo);
       if (!userhash) return undefined;
       if (store.getters.getMyUserInfo.usertoken === userhash) {
-        console.log(`$_getUserInfo called to getMyUserInfo: ${userhash}`);
+        console.debug(`$_getUserInfo called to getMyUserInfo: ${userhash}`);
         return store.getters.getMyUserInfo;
       }
       const info = store.getters.getUserInfos[userhash];
@@ -71,7 +88,7 @@ export default {
           return undefined;
         })
         .catch(() => {
-          console.log(`Error while $_getUserInfo: ${userhash}, ${info}`);
+          console.error(`Error while $_getUserInfo: ${userhash}, ${info}`);
           return undefined;
         });
     },
@@ -110,7 +127,7 @@ export default {
           return respdata;
         })
         .catch(() => {
-          console.log(`Error while $_fetchPayData: ${payhash}, ${data}`);
+          console.error(`Error while $_fetchPayData: ${payhash}, ${data}`);
           return undefined;
         });
     },

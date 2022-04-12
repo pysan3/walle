@@ -29,7 +29,7 @@ const topChildren = [
 const routerOptions = [
   { path: '/new', component: 'NewItem', requiredAuth: true },
   { path: '/tryaccess/:page', component: 'TryAccess', requiredAuth: false },
-  { path: '/:pathMatch(.*)*', component: 'Top', children: topChildren.map(e => routerMap(e, false)) },
+  { path: '/:pathMatch(.*)*', component: 'Top', children: topChildren.map(e => routerMap(e, true)) },
 ];
 
 const routes = routerOptions.map(routerMapView);

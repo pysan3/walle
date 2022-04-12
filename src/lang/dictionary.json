@@ -2,8 +2,12 @@
     "en": {
         "Newitem": {
             "deleteall": "Delete All",
+            "description": "Description",
             "newitem": "New Item",
-            "payor": "Payor"
+            "payment": "Cost",
+            "payor": "Payor",
+            "submit": "Submit",
+            "templates": "Choose From Templates"
         },
         "Notifications": {
             "deleteall": "Delete All",
@@ -28,14 +32,20 @@
             "username": "User Name"
         },
         "Utils": {
-            "pairselect": "Select Pair"
+            "pairselect": "Select Pair",
+            "spelltime": "%m/%d/%Y",
+            "yen": "Yen"
         }
     },
     "ja": {
         "Newitem": {
             "deleteall": "\u3059\u3079\u3066\u65e2\u8aad\u3059\u308b",
+            "description": "\u8a73\u7d30",
             "newitem": "\u65b0\u898f\u767b\u9332",
-            "payor": "\u652f\u6255\u8005"
+            "payment": "\u91d1\u984d",
+            "payor": "\u652f\u6255\u8005",
+            "submit": "\u767b\u9332",
+            "templates": "\u5c65\u6b74\u304b\u3089\u9078\u3076"
         },
         "Notifications": {
             "deleteall": "\u3059\u3079\u3066\u65e2\u8aad\u3059\u308b",
@@ -60,7 +70,9 @@
             "username": "\u30e6\u30fc\u30b6\u540d"
         },
         "Utils": {
-            "pairselect": "\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044"
+            "pairselect": "\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044",
+            "spelltime": "%Y/%m/%d",
+            "yen": "\u5186"
         }
     }
 }

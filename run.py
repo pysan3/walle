@@ -27,7 +27,7 @@ async def login(_req: Request, resp: Response, *, preq: REQlogin, presp: RESPtok
     presp.success = token is not None
     if token is not None:
         presp.token = token
-        userid = backapp.usertoken2id(token)
+        userid = backapp.searchTokenTable(token)
         print(f'api login {userid=}')
         lm.login_user(LMUsers(user_or_userid=userid))
         resp.headers.update(backapp.returnwebsessiontoken(userid))
@@ -84,6 +84,15 @@ async def getuserinfo(_req: Request, _resp: Response, *, preq: REQasignpair, pre
 @proto_wrap(REQasignpair, RESPsuccess)
 async def requestpair(_req: Request, _resp: Response, *, preq: REQasignpair, presp: RESPsuccess):
     backpair.addnewpair(lm.current_member.id_int, backapp.usertoken2id(preq.usertoken))
+    presp.success = True
+
+
+@api.route('/api/acceptpair')
+@proto_wrap(REQpairinfo, RESPsuccess)
+async def acceptpair(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: RESPsuccess):
+    if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
+        return
+    backpair.acceptpair(lm.current_member.id_int, pairhash=preq.pairhash)
     presp.success = True
 
 

@@ -1,32 +1,35 @@
 <template>
   <div>
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar class="mx-auto">
         {{ $t('Utils.pairselect') }}
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <ion-list>
-        <ion-item v-for="(pvalue, pairhash, index) in pairList" :key="index">
+        <ion-item v-for="(pvalue, pairhash, index) in pairList" :key="index" @click="choosePair(pairhash)">
           <ion-label>
-            <h2>
-              {{
-                pvalue.name
-                  .replace($store.getters.getMyUserInfo.username, '')
-                  .trim()
-                  .replace(' ', ',')
-              }}
-            </h2>
+            <h2>w/ {{ $_pname(pvalue.name) }}</h2>
             <div class="d-flex">
-              <ion-avatar
-                v-for="(user, uidx) in pvalue.userhashes
-                  .filter(uh => uh !== $store.getters.getMyUserInfo.usertoken)
-                  .map(uh => pvalue.userinfos[uh])"
-                :key="uidx"
-              >
-                <img :src="`${user.icon}`" :alt="`${user.username}`" />
-              </ion-avatar>
+              <ion-item>
+                <ion-avatar
+                  v-for="(user, uidx) in pvalue.userhashes
+                    .filter(uh => uh !== $store.getters.getMyUserInfo.usertoken)
+                    .map(uh => pvalue.userinfos[uh])"
+                  :key="uidx"
+                >
+                  <img :src="`${user.icon}`" :alt="`${user.username}`" />
+                </ion-avatar>
+              </ion-item>
             </div>
+            <ion-row responsive-sm class="my-0" v-show="!pvalue.accepted">
+              <ion-col>
+                <ion-button @click="acceptPair(pairhash)" expand="block">Accept</ion-button>
+              </ion-col>
+              <ion-col>
+                <ion-button @click="declinePair(pairhash)" color="light" expand="block">Decline</ion-button>
+              </ion-col>
+            </ion-row>
           </ion-label>
         </ion-item>
       </ion-list>
@@ -43,7 +46,18 @@ export default {
       pairList: {},
     };
   },
-  methods: {},
+  methods: {
+    choosePair(pairhash) {
+      this.$store.commit('setCurrentPairHash', pairhash);
+      window.location.reload(false);
+    },
+    acceptPair(pairhash) {
+      Axios.post('/api/acceptpair', { pairhash });
+    },
+    declinePair(pairhash) {
+      console.error('Not Implemented');
+    },
+  },
   async created() {
     this.pairList = await Axios.post('/api/mypairs', {}).then(async r =>
       Object.fromEntries(
@@ -55,7 +69,6 @@ export default {
         )
       )
     );
-    console.log(this.pairList);
   },
 };
 </script>

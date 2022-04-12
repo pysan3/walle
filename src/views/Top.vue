@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-tabs>
+    <ion-tabs @ionTabsDidChange="$forceUpdate()">
       <TopHeader :currentTab="$route.name" />
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="history" href="/history">
@@ -22,7 +22,7 @@
         <ion-icon :src="$i('add')"></ion-icon>
       </ion-fab-button>
       <ion-fab-list side="start">
-        <ion-fab-button color="light">
+        <ion-fab-button color="light" @click="$router.push('/new')">
           <ion-icon :src="$i('create-outline')"></ion-icon>
         </ion-fab-button>
       </ion-fab-list>
@@ -35,6 +35,7 @@ import { IonIcon, IonLabel, IonPage, IonTabBar, IonTabButton, IonTabs } from '@i
 import TopHeader from '@/components/TopHeader';
 
 export default {
+  name: 'top',
   components: {
     IonIcon,
     IonLabel,
@@ -43,9 +44,6 @@ export default {
     IonTabButton,
     IonTabs,
     TopHeader,
-  },
-  created() {
-    console.log(this.$route.name);
   },
 };
 </script>

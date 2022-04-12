@@ -62,6 +62,14 @@ def usertoken2id(token: str, session=None):
         return int(user.id)  # type: ignore
 
 
+def searchTokenTable(token: str, session=None):
+    with SessionContext(session=session) as session:
+        token = session.query(TokenTable).filter_by(token=token).one_or_none()
+        if token is None:
+            raise Exception(f'Token: {token} Is Not Found in Tokentable')
+        return int(token.userid)  # type: ignore
+
+
 def userid2token(userid: int, session=None) -> str:
     with SessionContext(session=session) as session:
         user = session.query(Users).get(userid)

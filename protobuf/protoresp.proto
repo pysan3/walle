@@ -12,6 +12,7 @@ message PBRESPPayment {
   required int32 payment = 3;
   optional string description = 4;
   required string createdAt = 5;
+  required string creatorhash = 6;
 }
 
 message RESPtoken {

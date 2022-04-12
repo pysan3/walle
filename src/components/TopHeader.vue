@@ -15,9 +15,14 @@
             <ion-icon :src="$i('notifications-outline')"></ion-icon>
           </ion-button>
           <ion-chip outline color="light" @click="openPairSelector()">
-            <ion-label>Takuto</ion-label>
-            <ion-avatar>
-              <img src="@/assets/profile.jpg" alt="Prof" class="border border-light" />
+            <ion-label>{{ $_pname(currentPairData.name) }}</ion-label>
+            <ion-avatar
+              v-for="(user, uidx) in (currentPairData.userhashes || [])
+                .filter(uh => uh !== $store.getters.getMyUserInfo.usertoken)
+                .map(uh => currentPairData.userinfos[uh])"
+              :key="uidx"
+            >
+              <img :src="`${user.icon}`" :alt="`${user.username}`" class="border border-light" />
             </ion-avatar>
           </ion-chip>
         </ion-buttons>
@@ -33,6 +38,11 @@ import PairSelect from '@/components/PairSelect.vue';
 
 export default {
   props: ['currentTab'],
+  data() {
+    return {
+      currentPairData: {},
+    };
+  },
   methods: {
     async openNotification(ev) {
       const popover = await popoverController.create({
@@ -50,6 +60,17 @@ export default {
       });
       return popover.present();
     },
+    async reloadCurrentData() {
+      this.currentPairData = await this.$_completePairData(this.$store.state.currentPairHash);
+    },
+  },
+  watch: {
+    '$store.state.currentPairHash': function() {
+      this.reloadCurrentData();
+    },
+  },
+  async created() {
+    await this.reloadCurrentData();
   },
 };
 </script>

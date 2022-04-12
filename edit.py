@@ -1,7 +1,7 @@
 from utils.tmp_db_data import default_infos
 from app.db_connector import *  # noqa
 from app.sqlalchemy_h import Base, engine, SessionContext
-from app import backapp, backpair
+from app import backapp, backpair, backpays
 import argparse
 import datetime as dt
 import json
@@ -49,12 +49,14 @@ def db_init(auto_yes=False):
             if token is None:
                 token = backapp.userid2token(i + 1)
             user['token'] = token
-        backpair.addnewpair(1, 2)
-        db_show()
         backpair.addnewpair(2, 1)
-        db_show()
+        for i, pay in enumerate(default_infos['payments']):
+            pay['pairhash'] = backpair.generatePairHash(1, 2)
+            token = backpays.addpayment(**pay)
+            print(f'{i=}', f'{pay=}', f'{token=}')
     else:
         print('Not initializing the DB.')
+    db_show()
 
 
 def show_all_data(name: str, columns, data):
@@ -108,10 +110,8 @@ class VueI18nDict:
                     if len(keys) < len(languages) + 1:
                         continue
                     for i, lang in enumerate(languages):
-                        self.dictionary[lang].setdefault(
-                            p.stem.capitalize(), {})
-                        self.dictionary[lang][p.stem.capitalize(
-                        )][keys[0]] = keys[i + 1].replace('~', ',')
+                        self.dictionary[lang].setdefault(p.stem.capitalize(), {})
+                        self.dictionary[lang][p.stem.capitalize()][keys[0]] = keys[i + 1].replace('~', ',')
 
     def reset(self):
         self.dictionary = {}
@@ -128,8 +128,7 @@ if __name__ == "__main__":
     env = DotEnvParser('.env')
 
     parser = argparse.ArgumentParser(description='upload .md to your webpage')
-    parser.add_argument('-y', '--yes', action='store_true',
-                        help='pass yes to all verifications')
+    parser.add_argument('-y', '--yes', action='store_true', help='pass yes to all verifications')
     parser.add_argument('--lang', action='store_true', help='language json')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-d', '--db', type=str, help='delete all data in DB')

@@ -53,6 +53,6 @@ def getPayInfo(hashing: bool = False, *, payid: Optional[int] = None, payhash: O
         datadict = data.get_dict()
         if hashing:
             datadict['payorhash'] = backapp.userid2token(datadict.pop('payor'))
-            datadict['cretorhash'] = backapp.userid2token(datadict.pop('cretor'))
+            datadict['creatorhash'] = backapp.userid2token(datadict.pop('creator'))
             datadict['pairhash'] = session.query(Pairs).get(datadict.pop('pairid')).pairhash
         return datadict
