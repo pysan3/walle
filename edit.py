@@ -1,4 +1,7 @@
-from utils.tmp_db_data import default_infos
+try:
+    from utils.tmp_db_data import default_infos
+except Exception:
+    default_infos = {}
 from app.db_connector import *  # noqa
 from app.sqlalchemy_h import Base, engine, SessionContext
 from app import backapp, backpair, backpays

@@ -15,11 +15,6 @@ from app.hashids import accessHM
 if TYPE_CHECKING:
     from app.login_manager import LMUsers
 
-os.environ['WELLE_WSM_JWT_SALT'] = 'test'
-os.environ['WELLE_WSM_SERIALIZER_KEY'] = 'test'
-os.environ['WELLE_WSM_SERIALIZER_SALT'] = 'test'
-os.environ['WELLE_WSM_ACCESSTOKEN_ENCRYPT'] = 'false'
-
 
 class WebSessionCache:
     def __init__(self, max_length: int = 100, expires: datetime.timedelta = datetime.timedelta(0)) -> None:

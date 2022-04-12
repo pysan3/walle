@@ -14,12 +14,12 @@
           <ion-button @click="openNotification()">
             <ion-icon :src="$i('notifications-outline')"></ion-icon>
           </ion-button>
-          <ion-chip outline color="light" @click="openPairSelector()">
-            <ion-label>{{ $_pname(currentPairData.name) }}</ion-label>
+          <ion-chip outline color="light" @click="openPairSelector()" v-if="pairData">
+            <ion-label>{{ $_pname(pairData.name) }}</ion-label>
             <ion-avatar
-              v-for="(user, uidx) in (currentPairData.userhashes || [])
+              v-for="(user, uidx) in (pairData.userhashes || [])
                 .filter(uh => uh !== $store.getters.getMyUserInfo.usertoken)
-                .map(uh => currentPairData.userinfos[uh])"
+                .map(uh => pairData.userinfos[uh])"
               :key="uidx"
             >
               <img :src="`${user.icon}`" :alt="`${user.username}`" class="border border-light" />
@@ -40,7 +40,7 @@ export default {
   props: ['currentTab'],
   data() {
     return {
-      currentPairData: {},
+      pairData: undefined,
     };
   },
   methods: {
@@ -61,11 +61,12 @@ export default {
       return popover.present();
     },
     async reloadCurrentData() {
-      this.currentPairData = await this.$_completePairData(this.$store.state.currentPairHash);
+      this.pairData = await this.$_completePairData(this.$store.getters.getCurrentPairHash);
+      console.log(this.pairData);
     },
   },
   watch: {
-    '$store.state.currentPairHash': function() {
+    '$store.getters.getCurrentPairHash': function() {
       this.reloadCurrentData();
     },
   },

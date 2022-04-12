@@ -98,22 +98,24 @@ function build_protobuf() {
   done
 
   # Compile protobuf (typescript)
-  if [[ x"$backonly" != xtrue ]]; then
-    cd "$PROTO_DIR"
-    AUTOGEN_TS=../src/plugins/protobuf
-    mkdir -p "$AUTOGEN_TS"
-    [ $(command find "$AUTOGEN_TS" -name '*_pb2*' | wc -l) -gt 0 ] && rm "$AUTOGEN_TS"/*_pb2*
-    info "Compiling protobuf for js/ts to $PROTO_DIR/$AUTOGEN_TS/$pb2.ts"
-    protoc \
-      --plugin=$CWD/node_modules/.bin/protoc-gen-ts_proto \
-      --ts_proto_opt=exportCommonSymbols=false,unrecognizedEnum=false,fileSuffix=_pb2,esModuleInterop=true,oneof=unions \
-      --ts_proto_out="$AUTOGEN_TS" *.proto
-    echo '/* eslint-disable */' > "$AUTOGEN_TS"/$pb2.ts
-    for f in $protofiles; do
-      F="${f%.*}" && echo "export * from './${F}_pb2';" >> "$AUTOGEN_TS"/$pb2.ts
-    done
-  fi
+  # if [[ x"$backonly" != xtrue ]]; then
+  #   cd "$PROTO_DIR"
+  #   AUTOGEN_TS=../src/plugins/protobuf
+  #   mkdir -p "$AUTOGEN_TS"
+  #   [ $(command find "$AUTOGEN_TS" -name '*_pb2*' | wc -l) -gt 0 ] && rm "$AUTOGEN_TS"/*_pb2*
+  #   info "Compiling protobuf for js/ts to $PROTO_DIR/$AUTOGEN_TS/$pb2.ts"
+  #   protoc \
+  #     --plugin=$CWD/node_modules/.bin/protoc-gen-ts_proto \
+  #     --ts_proto_opt=exportCommonSymbols=false,unrecognizedEnum=false,fileSuffix=_pb2,esModuleInterop=true,oneof=unions \
+  #     --ts_proto_out="$AUTOGEN_TS" *.proto
+  #   echo '/* eslint-disable */' > "$AUTOGEN_TS"/$pb2.ts
+  #   for f in $protofiles; do
+  #     F="${f%.*}" && echo "export * from './${F}_pb2';" >> "$AUTOGEN_TS"/$pb2.ts
+  #   done
+  # fi
+
   cd "$CWD"
+
   # Create a documentation of protobuf defined APIs
   # docker run --rm \
   #     -v $PWD/docs:/out \

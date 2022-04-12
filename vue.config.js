@@ -1,6 +1,12 @@
 module.exports = {
-  publicPath: process.env.VUE_APP_PUBLICPATH,
+  // publicPath: '/static',
+  outputDir: 'static',
   devServer: {
-    proxy: 'http://localhost:5042',
+    proxy: {
+      '^/api': {
+        target: 'http://localhost:5042',
+        changeOrigin: true,
+      },
+    },
   },
 };

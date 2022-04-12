@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from '@ionic/vue-router';
+import { createRouter, createWebHashHistory } from '@ionic/vue-router';
 import store from '@/store';
 import mixin from '@/mixin';
 
@@ -35,7 +35,7 @@ const routerOptions = [
 const routes = routerOptions.map(routerMapView);
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(process.env.BASE_URL),
   routes,
 });
 

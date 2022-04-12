@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  backend:
+    container_name: walle
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    restart: always
+    ports:
+      - 6019:5042
+    volumes:
+      - ./run.py:/www/run.py
+      - ./.env:/www/.env
+      - ./pyproject.toml:/www/pyproject.toml
+      - ./poetry.lock:/www/poetry.lock
+      - ./alembic.ini:/www/alembic.ini
+      - ./app:/www/app
+      - ./utils:/www/utils
+      - ./migration:/www/migration
+      - ./dist:/www/static/dist
+    environment:
+      - WALLE_HASHID_SALT=${WALLE_HASHID_SALT:-WALLE_HASHID_SALT}
+      - WALLE_LM_ACCOUNT_COOKIENAME=${WALLE_LM_ACCOUNT_COOKIENAME:-WALLE_HASHID_SALT}
+      - WALLE_LM_FRESH_COOKIENAME=${WALLE_LM_FRESH_COOKIENAME:-WALLE_HASHID_SALT}
+      - WALLE_WSM_JWT_SALT=${WALLE_WSM_JWT_SALT:-WALLE_HASHID_SALT}
+      - WALLE_WSM_SERIALIZER_KEY=${WALLE_WSM_SERIALIZER_KEY:-WALLE_HASHID_SALT}
+      - WALLE_WSM_SERIALIZER_SALT=${WALLE_WSM_SERIALIZER_SALT:-WALLE_HASHID_SALT}
+      - WALLE_WSM_ACCESSTOKEN_ENCRYPT=${WALLE_WSM_ACCESSTOKEN_ENCRYPT:-WALLE_HASHID_SALT}

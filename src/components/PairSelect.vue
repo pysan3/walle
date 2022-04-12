@@ -44,15 +44,23 @@ export default {
   data() {
     return {
       pairList: {},
+      connecting: false,
     };
   },
   methods: {
     choosePair(pairhash) {
+      if (this.connecting) return;
       this.$store.commit('setCurrentPairHash', pairhash);
       window.location.reload(false);
     },
     acceptPair(pairhash) {
-      Axios.post('/api/acceptpair', { pairhash });
+      this.connecting = true;
+      Axios.post('/api/acceptpair', { pairhash }).then(response => {
+        if (response.data.success) {
+          this.pairList[pairhash].accepted = true;
+        }
+        this.connecting = false;
+      });
     },
     declinePair(pairhash) {
       console.error('Not Implemented');

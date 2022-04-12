@@ -6,14 +6,19 @@
 !./pyproject.toml
 !./poetry.lock
 !./.env
+!./command.sh
 !./alembic.ini
 !./app
 !./protobuf
 !./migration
+!./utils
 !./public
 !./src
 !./*.js
 !./*.json
+!./.eslint*
+!./.prettier*
 
 **/__pycache__*
 ./src/lang/*.json
+*.sqlite3

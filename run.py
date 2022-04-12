@@ -10,9 +10,8 @@ from app.login_manager import LMUsers, lm, lm_user_loader
 install(show_locals=True)
 
 api = responder.API(
-    static_dir='./dist',
     static_route='/',
-    templates_dir='./dist',
+    templates_dir='static',
 )
 api.add_route('/', static=True)
 
@@ -91,6 +90,7 @@ async def requestpair(_req: Request, _resp: Response, *, preq: REQasignpair, pre
 @proto_wrap(REQpairinfo, RESPsuccess)
 async def acceptpair(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: RESPsuccess):
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
+        print(f'acceptpair: {lm.current_member.id_int=}, {preq.pairhash} not valid')
         return
     backpair.acceptpair(lm.current_member.id_int, pairhash=preq.pairhash)
     presp.success = True
@@ -108,6 +108,7 @@ async def mypairs(_req: Request, _resp: Response, *, preq: REQnone, presp: RESPm
 @proto_wrap(REQpairinfo, RESPpairinfo)
 async def pairinfo(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: RESPpairinfo):
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
+        print(f'pairinfo: {lm.current_member.id_int=}, {preq.pairhash} not valid')
         return
     # presp.userhashes.extend(backpair.getpairlist(preq.pairhash))
     data = backpair.getPairData(preq.pairhash)
@@ -120,6 +121,7 @@ async def pairinfo(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: 
 async def addpayment(_req: Request, _resp: Response, *, preq: REQaddpayment, presp: RESPtoken):
     paydata = preq.payment
     if not backpair.validPairAccess(lm.current_member.id_int, paydata.pairhash):
+        print(f'addpayment: {lm.current_member.id_int=}, {paydata.pairhash} not valid')
         return
     presp.token = backpays.addpayment(
         paydata.pairhash,
@@ -135,6 +137,7 @@ async def addpayment(_req: Request, _resp: Response, *, preq: REQaddpayment, pre
 @proto_wrap(REQpairinfo, RESPgetpaymentlist)
 async def getpaymentlist(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: RESPgetpaymentlist):
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
+        print(f'getpaymentlist: {lm.current_member.id_int=}, {preq.pairhash} not valid')
         return
     presp.payhashlist.extend(backpays.getPaysList(pairhash=preq.pairhash))
 
@@ -147,4 +150,4 @@ async def getpayinfo(_req: Request, _resp: Response, *, preq: REQpayinfo, presp:
     presp.payinfo.MergeFrom(json_format.ParseDict(data, PBRESPPayment(), ignore_unknown_fields=True))
 
 if __name__ == '__main__':
-    api.run()
+    api.run(port=5042, address='0.0.0.0')
