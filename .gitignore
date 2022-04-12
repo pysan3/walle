@@ -7,7 +7,6 @@
 [Ss]cripts
 [Ss]hare
 pyvenv.cfg
-poetry.lock
 __pycache__
 *.cfg
 *.code-workspace
