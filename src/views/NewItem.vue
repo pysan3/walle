@@ -35,7 +35,7 @@
           <ion-input
             v-model="payment"
             name="payment"
-            type="number"
+            type="tel"
             spellcheck="false"
             autocapitalize="off"
             required
