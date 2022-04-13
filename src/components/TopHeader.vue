@@ -22,7 +22,11 @@
                 .map(uh => pairData.userinfos[uh])"
               :key="uidx"
             >
-              <img :src="`${user.icon}`" :alt="`${user.username}`" class="border border-light" />
+              <img
+                :src="`${user.icon}`"
+                :alt="`${user.username.slice(0, 1).toUpperCase()}`"
+                class="border border-light"
+              />
             </ion-avatar>
           </ion-chip>
         </ion-buttons>

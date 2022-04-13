@@ -20,6 +20,7 @@
             "monthly": "Monthly Review",
             "review": "Reviews",
             "search": "Search",
+            "settings": "Preferences",
             "stats": "Statistics",
             "upload": "Upload"
         },
@@ -58,6 +59,7 @@
             "monthly": "\u6708\u3054\u3068",
             "review": "\u5c65\u6b74",
             "search": "\u691c\u7d22",
+            "settings": "\u8a2d\u5b9a",
             "stats": "\u7d71\u8a08",
             "upload": "\u554f\u984c\u3092\u4f5c\u6210"
         },

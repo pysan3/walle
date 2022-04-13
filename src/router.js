@@ -25,6 +25,7 @@ const topChildren = [
   { path: 'history', component: 'History', requiredAuth: true },
   { path: 'monthly', component: 'Monthly', requiredAuth: true },
   { path: 'stats', component: 'Stats', requiredAuth: true },
+  { path: 'settings', component: 'Settings', requiredAuth: true },
 ];
 const routerOptions = [
   { path: '/new', component: 'NewItem', requiredAuth: true },

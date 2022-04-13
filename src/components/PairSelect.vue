@@ -18,7 +18,7 @@
                     .map(uh => pvalue.userinfos[uh])"
                   :key="uidx"
                 >
-                  <img :src="`${user.icon}`" :alt="`${user.username}`" />
+                  <img :src="`${user.icon}`" :alt="`${user.username.slice(0, 1).toUpperCase()}`" />
                 </ion-avatar>
               </ion-item>
             </div>

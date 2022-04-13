@@ -21,7 +21,7 @@
                 <ion-avatar>
                   <img
                     :src="`${pairData.userinfos[userhash].icon}`"
-                    :alt="`${pairData.userinfos[userhash].username}`"
+                    :alt="`${pairData.userinfos[userhash].username.slice(0, 1).toUpperCase()}`"
                     class="border border-light"
                   />
                 </ion-avatar>

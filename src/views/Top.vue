@@ -15,6 +15,10 @@
           <ion-icon :src="$i('stats-chart')"></ion-icon>
           <ion-label>{{ $t('Top.stats') }}</ion-label>
         </ion-tab-button>
+        <ion-tab-button tab="settings" href="/settings">
+          <ion-icon :src="$i('settings-outline')"></ion-icon>
+          <ion-label>{{ $t('Top.settings') }}</ion-label>
+        </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
     <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-btn">
