@@ -92,7 +92,7 @@ export default {
           return undefined;
         });
     },
-    async $_fetchPairData(pairhash) {
+    async $_fetchPairDataPeriod(pairhash, from, duration) {
       if (!pairhash) return undefined;
       const data = store.getters.getPairDatas[pairhash];
       if (data) return data;
@@ -102,13 +102,16 @@ export default {
           .catch(() => ({}))),
         ...{
           pairhash,
-          payments: await Axios.post('/api/getpaymentlist', { pairhash })
+          payments: await Axios.post('/api/getpaymentsinperiod', { pairhash, from, duration })
             .then(r => r.data.payhashlist)
             .catch(() => []),
         },
       };
       store.commit('setPairData', respdata);
       return respdata;
+    },
+    $_fetchPairData(pairhash) {
+      return this.$_fetchPairData(pairhash, 0, -1);
     },
     async $_fetchPayData(payhash) {
       if (!payhash) return undefined;

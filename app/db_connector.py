@@ -78,6 +78,7 @@ class Payments(Base):
     creator = Column('creator', Integer)
     description = Column('description', Text)
     created_at = Column('created_at', String(20))
+    createdIn = Column('createdIn', Integer)
     pairid = Column('pairid', Integer)
 
     privacy_settings = {}

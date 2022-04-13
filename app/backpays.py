@@ -3,6 +3,19 @@ from app.db_connector import *  # noqa
 from app.sqlalchemy_h import SessionContext
 from app import backpair, backapp
 from app.hashids import payHM
+import datetime as dt
+from dateutil.relativedelta import relativedelta  # type: ignore
+
+
+class DateInInt:
+    def __init__(self, dateint: int) -> None:
+        self.date = dt.datetime(dateint // 100, dateint % 100, 1)
+
+    def __add__(self, duration: int):
+        self.date += relativedelta(months=duration)
+
+    def __int__(self):
+        return self.date.year * 100 + self.date.month
 
 
 def generatePaymentHash(payid: int, creator: int, payor: int) -> str:
@@ -31,13 +44,21 @@ def addpayment(pairhash: str, userid: int, payor: int, payment: int, description
         return generatePaymentHash(int(new.id), userid, payor)  # type: ignore
 
 
-def getPaysList(*, pairhash: Optional[str] = None, pairid: Optional[int] = None):
+def getPaysInPeriod(
+        pfrom: int = 0,
+        duration: int = -1,
+        *,
+        pairhash: Optional[str] = None,
+        pairid: Optional[int] = None):
     if pairhash is None and pairid is None:
         raise Exception(f'{pairhash=} or {pairid=} must be non-none value')
     with SessionContext() as session:
         if pairhash is not None:
             pairid = backpair.pairhash2dbid(pairhash, session)
-        data = session.query(Payments).filter_by(pairid=pairid).all()
+        query = session.query(Payments).filter_by(pairid=pairid)
+        if duration > 0:
+            query = query.filter()
+        data = query.all()
         return [generatePaymentHash(p.id, p.creator, p.payor) for p in data]
 
 

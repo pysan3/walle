@@ -40,6 +40,8 @@ message REQnone {
 
 message REQpairinfo {
   required string pairhash = 1;
+  optional int32 from = 2;
+  optional int32 duration = 3;
 }
 
 message REQaddpayment {

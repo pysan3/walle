@@ -23,22 +23,6 @@
           <WorkbookCard />
         </ion-col>
       </ion-row>
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button>
-          <ion-icon :src="$i('add')"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-list side="start">
-          <ion-fab-button color="light">
-            <ion-icon :src="$i('pricetags-outline')"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button color="light">
-            <ion-icon :src="$i('images-outline')"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button color="light">
-            <ion-icon :src="$i('book-outline')"></ion-icon>
-          </ion-fab-button>
-        </ion-fab-list>
-      </ion-fab>
     </ion-content>
   </ion-page>
 </template>
@@ -47,9 +31,14 @@
 import WorkbookCard from '@/components/WorkbookCard.vue';
 
 export default {
-  name: 'Home',
+  name: 'monthly',
   components: {
     WorkbookCard,
+  },
+  data() {
+    return {
+      pairData: {}
+    }
   },
   methods: {
     search(ev) {
@@ -60,5 +49,8 @@ export default {
       }
     },
   },
+  async computed() {
+    this.pairData = await this.$_completePairData(this.$store.getters.getCurrentPairHash)
+  }
 };
 </script>
