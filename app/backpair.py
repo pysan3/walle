@@ -20,6 +20,9 @@ def validPairAccess(userid: int, pairhash: str):
 
 def addnewpair(userid: int, *ids: int):
     users = sorted([userid, *ids])
+    print(users)
+    if len(users) <= 1:
+        return False
     pairhash = generatePairHash(*users)
     with SessionContext() as session:
         pair: Optional[Pairs] = session.query(Pairs).filter_by(pairhash=pairhash).one_or_none()
@@ -38,7 +41,7 @@ def addnewpair(userid: int, *ids: int):
         session.add(PairsIndex(userid=userid, pairid=pairid, pairhash=pairhash, accepted=True))
         for i in ids:
             session.add(PairsIndex(userid=i, pairid=pairid, pairhash=pairhash, accepted=False))
-        return False
+        return True
 
 
 def acceptpair(userid: int, *, pairhash: Optional[str] = None, pairid: Optional[int] = None):
@@ -50,7 +53,7 @@ def acceptpair(userid: int, *, pairhash: Optional[str] = None, pairid: Optional[
             pair = session.query(Pairs).get(pairid)
         if pair is None:
             raise Exception(f'Pair not Found {userid=}, {pairhash=}, {pairid=}')
-        pair.waitingnum -= 1
+        pair.waitingnum -= 1  # type: ignore
         pairindex = session.query(PairsIndex).filter_by(userid=userid, pairid=pair.id).one()
         pairindex.accepted = True
         return True

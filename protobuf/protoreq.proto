@@ -31,6 +31,10 @@ message REQasignpair {
   required string usertoken = 1;
 }
 
+message REQrequestpair {
+  repeated string usertokens = 1;
+}
+
 message REQnone {
 }
 

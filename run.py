@@ -80,10 +80,12 @@ async def getuserinfo(_req: Request, _resp: Response, *, preq: REQasignpair, pre
 
 @api.route('/api/requestpair')
 @lm.login_required
-@proto_wrap(REQasignpair, RESPsuccess)
-async def requestpair(_req: Request, _resp: Response, *, preq: REQasignpair, presp: RESPsuccess):
-    backpair.addnewpair(lm.current_member.id_int, backapp.usertoken2id(preq.usertoken))
-    presp.success = True
+@proto_wrap(REQrequestpair, RESPsuccess)
+async def requestpair(_req: Request, _resp: Response, *, preq: REQrequestpair, presp: RESPsuccess):
+    presp.success = backpair.addnewpair(
+        lm.current_member.id_int,
+        *[backapp.usertoken2id(token) for token in preq.usertokens]
+    )
 
 
 @api.route('/api/acceptpair')

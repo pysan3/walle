@@ -3,6 +3,12 @@
     <ion-header>
       <ion-toolbar class="mx-auto">
         {{ $t('Utils.pairselect') }}
+        <ion-buttons slot="end">
+          <ion-button @click="$router.push('/newpair')">
+            <ion-icon :src="$i('add-circle-outline')"></ion-icon>
+            <ion-label>{{ $t('Utils.add') }}</ion-label>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>

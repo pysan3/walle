@@ -6,6 +6,11 @@
           <ion-back-button default-href="/"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ $t('Newitem.newitem') }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button color="medium" href="/">
+            <ion-icon class="mx-2" :src="$i('home')"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>

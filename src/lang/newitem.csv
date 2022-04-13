@@ -1,8 +1,11 @@
 key,en,ja
 newitem,New Item,新規登録
+newpair,New Pair,新規登録
 payor,Payor,支払者
 deleteall,Delete All,すべて既読する
 payment,Cost,金額
 description,Description,詳細
 templates,Choose From Templates,履歴から選ぶ
 submit,Submit,登録
+addfriends,Add Friends,友達を選択する
+addtoken,Invite by User Token,ユーザトークンで招待する
