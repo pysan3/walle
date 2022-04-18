@@ -2,6 +2,7 @@ FROM python:3.8 as poetry
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
         default-libmysqlclient-dev inotify-tools protobuf-compiler \
+        sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /www
@@ -53,7 +54,7 @@ ADD public/ ./public/
 
 RUN ls -la
 
-RUN npm run build
+RUN npm run build --fix
 
 RUN ls /www
 
