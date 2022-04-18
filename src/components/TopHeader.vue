@@ -66,11 +66,10 @@ export default {
     },
     async reloadCurrentData() {
       this.pairData = await this.$_completePairData(this.$store.getters.getCurrentPairHash);
-      console.log(this.pairData);
     },
   },
   watch: {
-    '$store.getters.getCurrentPairHash': function() {
+    '$store.getters.getCurrentPairHash': function () {
       this.reloadCurrentData();
     },
   },

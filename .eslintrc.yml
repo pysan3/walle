@@ -8,7 +8,7 @@ parserOptions:
 extends:
   - '@vue/airbnb'
   - 'plugin:vue/vue3-essential'
-  - 'prettier'
+  # - 'prettier'
 rules:
   no-extend-native: 'off'
   func-names: 'off'

@@ -55,7 +55,9 @@
 
 <script>
 import { defineComponent } from 'vue';
-import { IonItem, IonLabel, IonList, IonCheckbox, IonRadio, IonRadioGroup, IonInput, IonTextarea } from '@ionic/vue';
+import {
+  IonItem, IonLabel, IonList, IonCheckbox, IonInput,
+} from '@ionic/vue';
 import Axios from '@/axios';
 
 export default defineComponent({
@@ -79,12 +81,12 @@ export default defineComponent({
     friendList() {
       if (!this.allPairInfo) return [];
       return Object.values(this.allPairInfo)
-        .map(e => {
+        .map((e) => {
           this.userinfos = { ...this.userinfos, ...e.userinfos };
           return e.userhashes;
         })
         .flat()
-        .filter(e => e !== this.$store.getters.getMyUserInfo.usertoken)
+        .filter((e) => e !== this.$store.getters.getMyUserInfo.usertoken)
         .sort((a, b) => this.userinfos[a].username.localeCompare(this.userinfos[b].username));
     },
   },
@@ -94,10 +96,10 @@ export default defineComponent({
         usertokens: [
           ...Object.entries(this.nameSelected)
             .map(([k, v]) => (v ? k : null))
-            .filter(e => e),
-          ...this.tokenList.map(e => (e || '').trim()).filter(e => e.length > 0),
+            .filter((e) => e),
+          ...this.tokenList.map((e) => (e || '').trim()).filter((e) => e.length > 0),
         ],
-      }).then(response => {
+      }).then((response) => {
         if (response.data.success) {
           this.$router.back();
         } else {
@@ -106,16 +108,14 @@ export default defineComponent({
       });
     },
     async getAllPairInfos() {
-      return Axios.post('/api/mypairs', {}).then(async r =>
-        Object.fromEntries(
-          await Promise.all(
-            r.data.pairs.map(async pidx => [
-              pidx.pairhash,
-              { ...(await this.$_completePairData(pidx.pairhash)), ...pidx },
-            ])
-          )
-        )
-      );
+      return Axios.post('/api/mypairs', {}).then(async (r) => Object.fromEntries(
+        await Promise.all(
+          r.data.pairs.map(async (pidx) => [
+            pidx.pairhash,
+            { ...(await this.$_completePairData(pidx.pairhash)), ...pidx },
+          ]),
+        ),
+      ));
     },
   },
   async created() {

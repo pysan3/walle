@@ -11,13 +11,13 @@ export default {
   },
   methods: {
     $_fillUserInfo() {
-      return Axios.post('/api/getmyuserinfo', {}).then(response => {
+      return Axios.post('/api/getmyuserinfo', {}).then((response) => {
         store.commit('setMyUserInfo', response.data);
       });
     },
     $_timeInLanguage(time, format) {
       const date = new Date(time);
-      const lpad = a => `00${a}`.slice(-2);
+      const lpad = (a) => `00${a}`.slice(-2);
       const correspond = {
         '%Y': date.getFullYear(),
         '%m': date.getMonth() + 1,
@@ -31,14 +31,14 @@ export default {
     $_checkIsLoggedin() {
       if (store.getters.getIsLoggedIn) return true;
       return Axios.post('/api/loggedin', {})
-        .then(response => {
+        .then((response) => {
           if (response.data.success) {
             store.commit('setIsLoggedIn', true);
             return true;
           }
           return false;
         })
-        .catch(error => {
+        .catch((error) => {
           if (process.env.NODE_ENV !== 'production') alert(error);
           return false;
         });
@@ -77,7 +77,7 @@ export default {
       const info = store.getters.getUserInfos[userhash];
       if (info) return info;
       return Axios.post('/api/getuserinfo', { usertoken: userhash })
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             store.commit('setUserInfo', {
               userhash,
@@ -92,33 +92,35 @@ export default {
           return undefined;
         });
     },
-    async $_fetchPairDataPeriod(pairhash, from, duration) {
+    async $_fetchPairDataPeriod(pairhash, pfrom, duration) {
       if (!pairhash) return undefined;
       const data = store.getters.getPairDatas[pairhash];
-      if (data) return data;
+      if (data && data.pfrom === pfrom && data.duration === duration) return data;
       const respdata = {
         ...(await Axios.post('/api/pairinfo', { pairhash })
-          .then(r => r.data)
+          .then((r) => r.data)
           .catch(() => ({}))),
         ...{
           pairhash,
-          payments: await Axios.post('/api/getpaymentsinperiod', { pairhash, from, duration })
-            .then(r => r.data.payhashlist)
+          payments: await Axios.post('/api/getpaymentsinperiod', { pairhash, pfrom, duration })
+            .then((r) => r.data.payhashlist)
             .catch(() => []),
+          pfrom,
+          duration,
         },
       };
       store.commit('setPairData', respdata);
       return respdata;
     },
     $_fetchPairData(pairhash) {
-      return this.$_fetchPairData(pairhash, 0, -1);
+      return this.$_fetchPairDataPeriod(pairhash, 0, 0);
     },
     async $_fetchPayData(payhash) {
       if (!payhash) return undefined;
       const data = store.getters.getPayDatas[payhash];
       if (data) return data;
       return Axios.post('/api/getpayinfo', { payhash })
-        .then(response => {
+        .then((response) => {
           const respdata = {
             ...response.data,
             ...{
@@ -134,22 +136,25 @@ export default {
           return undefined;
         });
     },
-    async $_completePairData(pairhash) {
+    async $_completePairDataPeriod(pairhash, pfrom, duration) {
       if (!pairhash) return {};
-      const data = await this.$_fetchPairData(pairhash);
+      const data = await this.$_fetchPairDataPeriod(pairhash, pfrom, duration);
       data.userinfos = Object.fromEntries(
-        await Promise.all(data.userhashes.map(async uh => [uh, await this.$_getUserInfo(uh)]))
+        await Promise.all(data.userhashes.map(async (uh) => [uh, await this.$_getUserInfo(uh)])),
       );
       data.payinfos = Object.fromEntries(
-        await Promise.all(data.payments.map(async ph => [ph, await this.$_fetchPayData(ph)]))
+        await Promise.all(data.payments.map(async (ph) => [ph, await this.$_fetchPayData(ph)])),
       );
       return data;
+    },
+    $_completePairData(pairhash) {
+      return this.$_completePairDataPeriod(pairhash, 0, 0);
     },
     $_camel2kebab(s) {
       return s.replace(/([^A-Z])([A-Z])/g, '$1-$2').toLowerCase();
     },
     $_kebab2camel(s) {
-      return s.replace(/-./g, x => x[1].toUpperCase());
+      return s.replace(/-./g, (x) => x[1].toUpperCase());
     },
   },
 };

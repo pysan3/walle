@@ -3,42 +3,116 @@
     <ion-content>
       <ion-header>
         <ion-toolbar>
-          <ion-searchbar
-            inputmode="search"
-            showCancelButton="focus"
-            type="text"
-            @ionInput="search"
-            class="pt-3"
-          ></ion-searchbar>
+          <ion-buttons slot="start">
+            <ion-button color="medium" @click="changeMonth(currentYear, currentMonth - 1)">
+              <ion-icon class="mx-2" :src="$i('chevron-back-outline')"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <!-- <ion-title>{{ $t('Newitem.newitem') }}</ion-title> -->
+          <div class="d-flex justify-content-center align-items-end">
+            <ion-select v-model="currentYear">
+              <ion-select-option
+                v-for="year in Array.from({ length: 10 }, (_, i) => now.getFullYear() - i)"
+                :key="year"
+                :value="year"
+              >
+                {{ year }}
+              </ion-select-option>
+            </ion-select>
+            <ion-label class="h4">/</ion-label>
+            <ion-select v-model="currentMonth">
+              <ion-select-option v-for="month in 12" :key="month" :value="month">
+                {{ month }}
+              </ion-select-option>
+            </ion-select>
+          </div>
+          <ion-buttons slot="end">
+            <ion-button color="medium" @click="changeMonth(currentYear, currentMonth + 1)">
+              <ion-icon class="mx-2" :src="$i('chevron-forward-outline')"></ion-icon>
+            </ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-row class="mt-2">
-        <ion-col size="6" no-padding>
-          <WorkbookCard />
-        </ion-col>
-        <ion-col size="6" no-padding>
-          <WorkbookCard />
-        </ion-col>
-        <ion-col size="6" no-padding>
-          <WorkbookCard />
-        </ion-col>
-      </ion-row>
+      <template v-if="pairData">
+        <ion-row>
+          <ion-col v-for="(uhash, idx) in pairData.userhashes" :key="idx" size="6" class="p-2">
+            <ion-chip outline class="">
+              <ion-avatar>
+                <img
+                  :src="`${pairData.userinfos[uhash].icon}`"
+                  :alt="`${pairData.userinfos[uhash].username.slice(0, 1).toUpperCase()}`"
+                  class="border border-light"
+                />
+              </ion-avatar>
+              <ion-label>{{ pairData.userinfos[uhash].username }}</ion-label>
+            </ion-chip>
+            <ion-label>
+              <p>sum:</p>
+              <h1 class="mx-auto text-center">{{ paySums[uhash] }}</h1>
+            </ion-label>
+            <ion-label>
+              <p>diff:</p>
+              <h1 class="mx-auto text-center">{{ paySums[uhash] - payAllSum }}</h1>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+        <ion-list class="border-top">
+          <ion-item
+            v-for="(p, idx) in pairData.payments.map(e => pairData.payinfos[e])"
+            :key="idx"
+            class="d-flex align-items-center"
+          >
+            <div class="text-secondary">{{ new Date(p.payinfo.createdAt).getDate() }}</div>
+            <ion-chip outline class="">
+              <ion-avatar>
+                <img
+                  :src="`${pairData.userinfos[p.payinfo.payorhash].icon}`"
+                  :alt="`${pairData.userinfos[p.payinfo.payorhash].username.slice(0, 1).toUpperCase()}`"
+                  class="border border-light"
+                />
+              </ion-avatar>
+            </ion-chip>
+            <div class="text-nowrap text-truncate">{{ p.payinfo.description }}</div>
+            <div class="ml-auto">
+              <ion-icon :src="$i('logo-yen')"></ion-icon>
+              {{ $c(p.payinfo.payment) }}
+            </div>
+          </ion-item>
+        </ion-list>
+      </template>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="js">
-import WorkbookCard from '@/components/WorkbookCard.vue';
+import { defineComponent } from 'vue';
+import {
+  IonItem, IonLabel, IonList, IonRadio, IonRadioGroup, IonInput, IonTextarea, IonDatetime, IonSelect, IonSelectOption,
+} from '@ionic/vue';
+import Axios from '@/axios';
 
-export default {
+const now = new Date();
+export default defineComponent({
   name: 'monthly',
   components: {
-    WorkbookCard,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
   },
   data() {
     return {
-      pairData: {}
-    }
+      pairData: undefined,
+      currentYear: now.getFullYear(),
+      currentMonth: now.getMonth() + 1,
+      now,
+      paySums: {},
+      payAllSum: 0,
+    };
+  },
+  computed: {
+    dateInInt() {
+      return this.currentYear * 100 + this.currentMonth;
+    },
   },
   methods: {
     search(ev) {
@@ -48,9 +122,32 @@ export default {
         console.log(`Searching for '${query}'.`);
       }
     },
+    changeMonth(year, month) {
+      this.currentMonth = ((month - 1) % 12) + 1;
+      this.currentYear = year - (month < 1 ? 1 : 0) + (month > 12 ? 1 : 0);
+    },
+    async updateData() {
+      this.pairData = await this.$_completePairDataPeriod(
+        this.$store.getters.getCurrentPairHash,
+        this.dateInInt,
+        1,
+      );
+      this.payAllSum = 0;
+      this.pairData.userhashes.forEach((e) => { this.paySums[e] = 0; });
+      Object.values(this.pairData.payinfos).forEach((p) => {
+        this.paySums[p.payinfo.payorhash] += p.payinfo.payment;
+        this.payAllSum += p.payinfo.payment;
+      });
+    },
   },
-  async computed() {
-    this.pairData = await this.$_completePairData(this.$store.getters.getCurrentPairHash)
-  }
-};
+  watch: {
+    async dateInInt() {
+      await this.updateData();
+      this.$forceUpdate();
+    },
+  },
+  async created() {
+    await this.updateData();
+  },
+});
 </script>

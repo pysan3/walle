@@ -54,13 +54,13 @@ export default {
   name: 'history',
   data() {
     return {
-      pairData: {}
+      pairData: {},
     };
   },
   computed: {
     payList() {
-      return (this.pairData.payments || []).map(e => this.pairData.payinfos[e])
-    }
+      return (this.pairData.payments || []).map((e) => this.pairData.payinfos[e]);
+    },
   },
   methods: {
     search(ev) {
@@ -72,7 +72,7 @@ export default {
     },
   },
   async created() {
-    this.pairData = await this.$_completePairData(this.$store.getters.getCurrentPairHash)
-  }
+    this.pairData = await this.$_completePairData(this.$store.getters.getCurrentPairHash);
+  },
 };
 </script>

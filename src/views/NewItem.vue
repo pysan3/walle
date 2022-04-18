@@ -78,7 +78,9 @@
 
 <script>
 import { defineComponent } from 'vue';
-import { IonItem, IonLabel, IonList, IonRadio, IonRadioGroup, IonInput, IonTextarea } from '@ionic/vue';
+import {
+  IonItem, IonLabel, IonList, IonRadio, IonRadioGroup, IonInput, IonTextarea,
+} from '@ionic/vue';
 import Axios from '@/axios';
 
 export default defineComponent({
@@ -109,7 +111,7 @@ export default defineComponent({
           payment: this.payment,
           description: this.description,
         },
-      }).then(response => {
+      }).then((response) => {
         if (response.data.success) {
           this.$router.back();
           this.$store.commit('removePairData', { pairhash: this.$store.getters.getCurrentPairHash });

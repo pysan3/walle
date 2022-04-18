@@ -141,7 +141,7 @@ async def getpaymentsinperiod(_req: Request, _resp: Response, *, preq: REQpairin
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
         print(f'getpaymentlist: {lm.current_member.id_int=}, {preq.pairhash} not valid')
         return
-    presp.payhashlist.extend(backpays.getPaysInPeriod(pairhash=preq.pairhash))
+    presp.payhashlist.extend(backpays.getPaysInPeriod(preq.pfrom, preq.duration, pairhash=preq.pairhash))
 
 
 @api.route('/api/getpayinfo')
