@@ -38,7 +38,7 @@ String.prototype.capitalize = function () {
 };
 
 const gettersDefault = Object.fromEntries(
-  Object.keys(state).map((key) => [`get${key.capitalize()}`, (state) => state[key]])
+  Object.keys(state).map((key) => [`get${key.capitalize()}`, (state) => state[key]]),
 );
 const getters = Object.assign(gettersDefault, {});
 
@@ -48,7 +48,7 @@ const mutationsDefault = Object.fromEntries(
     (state, value) => {
       state[key] = value;
     },
-  ])
+  ]),
 );
 const mutations = Object.assign(mutationsDefault, {
   setSessionManager(state, sessionManager) {

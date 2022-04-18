@@ -15,7 +15,7 @@ axios.interceptors.request.use(
     }
     return request;
   },
-  (err) => Promise.reject(err)
+  (err) => Promise.reject(err),
 );
 axios.interceptors.response.use(
   (response) => {
@@ -36,7 +36,7 @@ axios.interceptors.response.use(
     }
     return response;
   },
-  (err) => Promise.reject(err)
+  (err) => Promise.reject(err),
 );
 
 export default axios;
