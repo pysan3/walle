@@ -31,8 +31,7 @@ ADD app/ ./app/
 ADD src/ ./src/
 ADD migration/ ./migration/
 
-RUN ./command.sh --protoc
-RUN ./command.sh -i
+RUN ./command.sh --protoc -i
 
 # RUN python manage.py -d init -y
 RUN alembic upgrade head
@@ -61,8 +60,11 @@ RUN ls /www
 FROM poetry as final
 
 COPY --from=vue /www/static/ /www/static/
+RUN true
 COPY --from=poetry /www/protobuf/ /www/protobuf/
+RUN true
 ADD app/ /www/app/
+RUN true
 COPY . .
 
 EXPOSE 5042
