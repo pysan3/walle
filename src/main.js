@@ -30,12 +30,7 @@ import './theme/variables.css';
 
 import './registerServiceWorker';
 
-const app = createApp(App)
-  .use(IonicVue)
-  .use(router)
-  .use(store)
-  .use(i18n)
-  .mixin(mixin);
+const app = createApp(App).use(IonicVue).use(router).use(store).use(i18n).mixin(mixin);
 
 app.config.globalProperties.$axios = axios;
 iontags(app);

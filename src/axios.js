@@ -8,17 +8,17 @@ const axiosConfig = {
 
 const axios = Axios.create(axiosConfig);
 axios.interceptors.request.use(
-  request => {
+  (request) => {
     const sessiontoken = store.getters.getSessionToken;
     if (sessiontoken !== undefined) {
       request.headers.sessiontoken = sessiontoken;
     }
     return request;
   },
-  err => Promise.reject(err)
+  (err) => Promise.reject(err)
 );
 axios.interceptors.response.use(
-  response => {
+  (response) => {
     const sessiontoken = response.headers.setsessiontoken;
     if (sessiontoken !== undefined) {
       const expiresAt = response.headers.expiresat;
@@ -36,7 +36,7 @@ axios.interceptors.response.use(
     }
     return response;
   },
-  err => Promise.reject(err)
+  (err) => Promise.reject(err)
 );
 
 export default axios;

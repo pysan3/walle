@@ -26,5 +26,5 @@ export default createI18n({
   fallbackLocale: 'ja',
   messages,
   modifiers,
-  datetimeFormats: Object.fromEntries(Object.keys(messages).map(lang => [lang, defaultDatetimeFormat])),
+  datetimeFormats: Object.fromEntries(Object.keys(messages).map((lang) => [lang, defaultDatetimeFormat])),
 });

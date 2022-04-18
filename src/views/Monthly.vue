@@ -8,7 +8,6 @@
               <ion-icon class="mx-2" :src="$i('chevron-back-outline')"></ion-icon>
             </ion-button>
           </ion-buttons>
-          <!-- <ion-title>{{ $t('Newitem.newitem') }}</ion-title> -->
           <div class="d-flex justify-content-center align-items-end">
             <ion-select v-model="currentYear">
               <ion-select-option
@@ -58,7 +57,7 @@
         </ion-row>
         <ion-list class="border-top">
           <ion-item
-            v-for="(p, idx) in pairData.payments.map(e => pairData.payinfos[e])"
+            v-for="(p, idx) in pairData.payments.map((e) => pairData.payinfos[e])"
             :key="idx"
             class="d-flex align-items-center"
           >

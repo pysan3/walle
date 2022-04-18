@@ -90,7 +90,7 @@ export default defineComponent({
       Axios.post('/api/login', {
         username: this.username,
         password: this.password,
-      }).then(response => {
+      }).then((response) => {
         if (response.data.success === true) {
           this.$store.commit('setIsLoggedIn', true);
           this.$router.push(this.nextpath);

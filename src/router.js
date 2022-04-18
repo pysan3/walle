@@ -18,7 +18,7 @@ const routerMap = (route, isView) => {
   };
   return ret;
 };
-const routerMapView = route => routerMap(route, true);
+const routerMapView = (route) => routerMap(route, true);
 
 const topChildren = [
   { path: '', redirect: 'history' },
@@ -31,7 +31,7 @@ const routerOptions = [
   { path: '/new', component: 'NewItem', requiredAuth: true },
   { path: '/newpair', component: 'NewPair', requiredAuth: true },
   { path: '/tryaccess/:page', component: 'TryAccess', requiredAuth: false },
-  { path: '/:pathMatch(.*)*', component: 'Top', children: topChildren.map(e => routerMap(e, true)) },
+  { path: '/:pathMatch(.*)*', component: 'Top', children: topChildren.map((e) => routerMap(e, true)) },
 ];
 
 const routes = routerOptions.map(routerMapView);
@@ -43,7 +43,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   // eslint-disable-line no-unused-vars
-  if (to.matched.some(record => record.meta.requiredAuth)) {
+  if (to.matched.some((record) => record.meta.requiredAuth)) {
     // check if login is needed
     if (!(await mixins.$_checkIsLoggedin())) {
       to.query.nexturl = to.path;
@@ -54,7 +54,7 @@ router.beforeEach(async (to, from, next) => {
       });
       return;
     }
-    if (Object.values(store.getters.getMyUserInfo).filter(e => e === undefined).length > 0) {
+    if (Object.values(store.getters.getMyUserInfo).filter((e) => e === undefined).length > 0) {
       await mixins.$_fillUserInfo();
     }
   }

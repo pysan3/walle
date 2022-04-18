@@ -35,9 +35,7 @@
 </template>
 
 <script>
-import {
-  IonIcon, IonLabel, IonPage, IonTabBar, IonTabButton, IonTabs,
-} from '@ionic/vue';
+import { IonIcon, IonLabel, IonPage, IonTabBar, IonTabButton, IonTabs } from '@ionic/vue';
 import TopHeader from '@/components/TopHeader';
 
 export default {

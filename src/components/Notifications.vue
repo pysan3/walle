@@ -15,7 +15,7 @@
       <ion-list>
         <ion-item>
           <ion-avatar slot="start">
-            <img src="@/assets/profile.jpg" alt="">
+            <img src="@/assets/profile.jpg" alt="" />
           </ion-avatar>
           <ion-label>
             <h2>Finn</h2>

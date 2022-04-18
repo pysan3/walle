@@ -61,7 +61,7 @@
               v-for="pay in pairData.payments
                 .slice(-8)
                 .reverse()
-                .map(e => pairData.payinfos[e].payinfo)"
+                .map((e) => pairData.payinfos[e].payinfo)"
               :key="pay"
               v-show="pay.description"
               @click="description += pay.description"
@@ -78,9 +78,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import {
-  IonItem, IonLabel, IonList, IonRadio, IonRadioGroup, IonInput, IonTextarea,
-} from '@ionic/vue';
+import { IonItem, IonLabel, IonList, IonRadio, IonRadioGroup, IonInput, IonTextarea } from '@ionic/vue';
 import Axios from '@/axios';
 
 export default defineComponent({

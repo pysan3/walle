@@ -55,9 +55,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import {
-  IonItem, IonLabel, IonList, IonCheckbox, IonInput,
-} from '@ionic/vue';
+import { IonItem, IonLabel, IonList, IonCheckbox, IonInput } from '@ionic/vue';
 import Axios from '@/axios';
 
 export default defineComponent({
@@ -108,14 +106,16 @@ export default defineComponent({
       });
     },
     async getAllPairInfos() {
-      return Axios.post('/api/mypairs', {}).then(async (r) => Object.fromEntries(
-        await Promise.all(
-          r.data.pairs.map(async (pidx) => [
-            pidx.pairhash,
-            { ...(await this.$_completePairData(pidx.pairhash)), ...pidx },
-          ]),
-        ),
-      ));
+      return Axios.post('/api/mypairs', {}).then(async (r) =>
+        Object.fromEntries(
+          await Promise.all(
+            r.data.pairs.map(async (pidx) => [
+              pidx.pairhash,
+              { ...(await this.$_completePairData(pidx.pairhash)), ...pidx },
+            ])
+          )
+        )
+      );
     },
   },
   async created() {

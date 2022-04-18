@@ -50,10 +50,7 @@ export default {
       return n.toLocaleString('en-US');
     },
     $_pname(name) {
-      return (name || '')
-        .replace(store.getters.getMyUserInfo.username, '')
-        .trim()
-        .replace(' ', ',');
+      return (name || '').replace(store.getters.getMyUserInfo.username, '').trim().replace(' ', ',');
     },
     async $_controlMenu(menuname, status) {
       switch (status) {
@@ -140,10 +137,10 @@ export default {
       if (!pairhash) return {};
       const data = await this.$_fetchPairDataPeriod(pairhash, pfrom, duration);
       data.userinfos = Object.fromEntries(
-        await Promise.all(data.userhashes.map(async (uh) => [uh, await this.$_getUserInfo(uh)])),
+        await Promise.all(data.userhashes.map(async (uh) => [uh, await this.$_getUserInfo(uh)]))
       );
       data.payinfos = Object.fromEntries(
-        await Promise.all(data.payments.map(async (ph) => [ph, await this.$_fetchPayData(ph)])),
+        await Promise.all(data.payments.map(async (ph) => [ph, await this.$_fetchPayData(ph)]))
       );
       return data;
     },

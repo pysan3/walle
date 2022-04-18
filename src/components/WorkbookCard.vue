@@ -4,9 +4,7 @@
       <ion-card-subtitle>
         <span>takuto</span>
       </ion-card-subtitle>
-      <ion-card-title>
-        title
-      </ion-card-title>
+      <ion-card-title> title </ion-card-title>
     </ion-card-header>
     <ion-card-content class="d-flex flex-wrap">
       <span class="mr-1"><ion-icon :src="$i('calendar-number-outline')"></ion-icon> 2021-1-5 </span>

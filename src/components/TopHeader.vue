@@ -18,8 +18,8 @@
             <ion-label>{{ $_pname(pairData.name) }}</ion-label>
             <ion-avatar
               v-for="(user, uidx) in (pairData.userhashes || [])
-                .filter(uh => uh !== $store.getters.getMyUserInfo.usertoken)
-                .map(uh => pairData.userinfos[uh])"
+                .filter((uh) => uh !== $store.getters.getMyUserInfo.usertoken)
+                .map((uh) => pairData.userinfos[uh])"
               :key="uidx"
             >
               <img
