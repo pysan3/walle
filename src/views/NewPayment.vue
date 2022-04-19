@@ -70,7 +70,7 @@
       </ion-list>
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button @click="submit()">
-          <ion-icon :src="$i('chevron-forward-circle-outline')"></ion-icon>
+          <ion-icon :src="$i('send-sharp')"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -121,9 +121,9 @@ export default defineComponent({
     uniqueRevDesc() {
       const descSet = new Set();
       return this.pairData.payments
-        .map((e) => this.pairData.payinfos[e].description)
+        .map(e => this.pairData.payinfos[e].description)
         .reverse()
-        .filter((e) => {
+        .filter(e => {
           if (descSet.has(e)) return false;
           descSet.add(e);
           return true;
@@ -132,9 +132,9 @@ export default defineComponent({
     },
     updatable() {
       return (
-        this.$route.name !== 'updatepayment'
-        || this.pairData.payinfos[this.payhash].creatorhash === this.$store.getters.getMyUserInfo.usertoken
-        || this.pairData.payinfos[this.payhash].payorhash === this.$store.getters.getMyUserInfo.usertoken
+        this.$route.name !== 'updatepayment' ||
+        this.pairData.payinfos[this.payhash].creatorhash === this.$store.getters.getMyUserInfo.usertoken ||
+        this.pairData.payinfos[this.payhash].payorhash === this.$store.getters.getMyUserInfo.usertoken
       );
     },
   },
@@ -147,7 +147,7 @@ export default defineComponent({
         payment: this.payment,
         description: this.description,
         createdAt: this.createdAt,
-      }).then((response) => {
+      }).then(response => {
         if (response.data.success) {
           this.$store.commit('removePairData', { pairhash: this.$store.getters.getCurrentPairHash });
           if (this.$route.name === 'newpayment') this.payhash = response.data.token;
