@@ -52,7 +52,7 @@ COPY public/ ./public/
 
 RUN ls -la
 
-RUN npm run build --fix
+RUN npm run build
 
 RUN ls ./
 

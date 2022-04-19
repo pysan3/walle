@@ -39,15 +39,15 @@
             <ion-icon :src="$i('logo-yen')"></ion-icon>
             {{ $c(payAllSum) }}
           </h3>
-          <p class="ml-auto">avg:</p>
+          <p>avg:</p>
           <h3>
             <ion-icon :src="$i('logo-yen')"></ion-icon>
-            {{ $c(payAllSum / (pairData.userhashes || [0]).length) }}
+            {{ $c(payAllSum / ((pairData.userhashes || []).length || 1)) }}
           </h3>
         </div>
         <ion-row>
           <ion-col v-for="(uhash, idx) in pairData.userhashes" :key="idx" size="6" class="p-2">
-            <ion-chip outline class="">
+            <ion-chip outline>
               <ion-avatar>
                 <img
                   :src="`${pairData.userinfos[uhash].icon}`"

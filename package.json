@@ -4,8 +4,8 @@
   "private": true,
   "description": "An Ionic project",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve --fix",
+    "build": "vue-cli-service build --fix",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
