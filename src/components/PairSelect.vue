@@ -20,8 +20,8 @@
               <ion-item>
                 <ion-avatar
                   v-for="(user, uidx) in pvalue.userhashes
-                    .filter((uh) => uh !== $store.getters.getMyUserInfo.usertoken)
-                    .map((uh) => pvalue.userinfos[uh])"
+                    .filter(uh => uh !== $store.getters.getMyUserInfo.usertoken)
+                    .map(uh => pvalue.userinfos[uh])"
                   :key="uidx"
                 >
                   <img :src="`${user.icon}`" :alt="`${user.username.slice(0, 1).toUpperCase()}`" />
@@ -61,7 +61,7 @@ export default {
     },
     acceptPair(pairhash) {
       this.connecting = true;
-      Axios.post('/api/acceptpair', { pairhash }).then((response) => {
+      Axios.post('/api/acceptpair', { pairhash }).then(response => {
         if (response.data.success) {
           this.pairList[pairhash].accepted = true;
         }
@@ -73,10 +73,10 @@ export default {
     },
   },
   async created() {
-    this.pairList = await Axios.post('/api/mypairs', {}).then(async (r) =>
+    this.pairList = await Axios.post('/api/mypairs', {}).then(async r =>
       Object.fromEntries(
         await Promise.all(
-          r.data.pairs.map(async (pidx) => [
+          r.data.pairs.map(async pidx => [
             pidx.pairhash,
             { ...(await this.$_completePairData(pidx.pairhash)), ...pidx },
           ])

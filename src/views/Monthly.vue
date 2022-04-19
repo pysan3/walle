@@ -33,6 +33,18 @@
         </ion-toolbar>
       </ion-header>
       <template v-if="pairData">
+        <div class="border-bottom border-secondary d-flex align-items-baseline justify-content-between px-2">
+          <p>sum:</p>
+          <h3>
+            <ion-icon :src="$i('logo-yen')"></ion-icon>
+            {{ $c(payAllSum) }}
+          </h3>
+          <p class="ml-auto">avg:</p>
+          <h3>
+            <ion-icon :src="$i('logo-yen')"></ion-icon>
+            {{ $c(payAllSum / (pairData.userhashes || [0]).length) }}
+          </h3>
+        </div>
         <ion-row>
           <ion-col v-for="(uhash, idx) in pairData.userhashes" :key="idx" size="6" class="p-2">
             <ion-chip outline class="">
@@ -51,7 +63,7 @@
             </ion-label>
             <ion-label>
               <p>diff:</p>
-              <h1 class="mx-auto text-center">{{ 2 * paySums[uhash] - payAllSum }}</h1>
+              <h1 class="mx-auto text-center">{{ payAllSum / 2 - paySums[uhash] }}</h1>
             </ion-label>
           </ion-col>
         </ion-row>
