@@ -1,7 +1,7 @@
 FROM python:3.8 as poetry
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-        default-libmysqlclient-dev inotify-tools protobuf-compiler \
+        default-libmysqlclient-dev inotify-tools tree protobuf-compiler \
         sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -19,25 +19,23 @@ ENV PYTHONFAULTHANDLER=1 \
 RUN pip install poetry
 
 # Copy only requirements to cache them in docker layer
-COPY pyproject.toml poetry.lock /www/
+COPY pyproject.toml poetry.lock ./
 
 # Project initialization:
 RUN poetry config virtualenvs.create false \
   && poetry install --no-dev --no-interaction --no-ansi
 
 COPY command.sh edit.py .env ./
-COPY alembic.ini /www/
-ADD protobuf/ ./protobuf/
-ADD app/ ./app/
-ADD src/ ./src/
-ADD migration/ ./migration/
+COPY alembic.ini ./
+COPY protobuf/ ./protobuf/
+COPY app/ ./app/
+COPY src/ ./src/
+COPY migration/ ./migration/
 
 RUN ./command.sh --protoc -i
 
 # RUN python manage.py -d init -y
 RUN alembic upgrade head
-
-RUN ls /www
 
 FROM node as vue
 
@@ -50,21 +48,20 @@ RUN npm install
 
 COPY *.js *.json .eslint* .prettier* ./
 COPY --from=poetry /www/src/ ./src/
-ADD public/ ./public/
+COPY public/ ./public/
 
 RUN ls -la
 
 RUN npm run build --fix
 
-RUN ls /www
+RUN ls ./
 
 FROM poetry as final
+WORKDIR /www
 
-COPY --from=vue /www/static/ /www/static/
-RUN true
-COPY --from=poetry /www/protobuf/ /www/protobuf/
-RUN true
-ADD app/ /www/app/
+COPY --from=vue /www/static/ ./static/
+COPY --from=poetry /www/protobuf/ ./protobuf/
+COPY app/ ./app/
 RUN true
 COPY . .
 

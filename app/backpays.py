@@ -89,7 +89,7 @@ def updatepayment(
         if payor != data.payor and not updatable:
             return False, 'User does not have permission to change `payor`'
         prev_created_dt = datetime.datetime.fromisoformat(data.created_at).replace(tzinfo=None)
-        if created_dt.date() == prev_created_dt.date() and not updatable:
+        if created_dt.date() != prev_created_dt.date() and not updatable:
             return False, 'User does not have permission to change `created datetime`'
         data.payment = payment
         data.payor = payor

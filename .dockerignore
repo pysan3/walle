@@ -9,7 +9,8 @@
 !./command.sh
 !./alembic.ini
 !./app
-!./protobuf
+!./protobuf/*.proto
+!./protobuf/protowrap.py
 !./migration
 !./utils
 !./public
