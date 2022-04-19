@@ -9,7 +9,7 @@
             </ion-button>
           </ion-buttons>
           <div class="d-flex justify-content-center align-items-end">
-            <ion-select v-model="currentYear">
+            <ion-select v-model="currentYear" interface="popover">
               <ion-select-option
                 v-for="year in Array.from({ length: 10 }, (_, i) => now.getFullYear() - i)"
                 :key="year"
@@ -19,7 +19,7 @@
               </ion-select-option>
             </ion-select>
             <ion-label class="h4">/</ion-label>
-            <ion-select v-model="currentMonth">
+            <ion-select v-model="currentMonth" interface="popover">
               <ion-select-option v-for="month in 12" :key="month" :value="month">
                 {{ month }}
               </ion-select-option>
@@ -33,7 +33,7 @@
         </ion-toolbar>
       </ion-header>
       <template v-if="pairData">
-        <div class="border-bottom border-secondary d-flex align-items-baseline justify-content-between px-2">
+        <div class="border-bottom border-secondary d-flex align-items-baseline justify-content-around px-2">
           <p>sum:</p>
           <h3>
             <ion-icon :src="$i('logo-yen')"></ion-icon>
