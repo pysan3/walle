@@ -118,21 +118,42 @@ async def pairinfo(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: 
     presp.MergeFrom(json_format.ParseDict(data, RESPpairinfo(), ignore_unknown_fields=True))
 
 
-@api.route('/api/addpayment')
-@proto_wrap(REQaddpayment, RESPtoken)
-async def addpayment(_req: Request, _resp: Response, *, preq: REQaddpayment, presp: RESPtoken):
-    paydata = preq.payment
-    if not backpair.validPairAccess(lm.current_member.id_int, paydata.pairhash):
-        print(f'addpayment: {lm.current_member.id_int=}, {paydata.pairhash} not valid')
+@api.route('/api/newpayment')
+@proto_wrap(PBREQPayment, RESPtoken)
+async def newpayment(_req: Request, _resp: Response, *, preq: PBREQPayment, presp: RESPtoken):
+    if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
+        print(f'newpayment: {lm.current_member.id_int=}, {preq.pairhash} not valid')
         return
-    presp.token = backpays.addpayment(
-        paydata.pairhash,
+    token = backpays.addpayment(
+        preq.pairhash,
         lm.current_member.id_int,
-        backapp.usertoken2id(paydata.payorhash),
-        paydata.payment,
-        paydata.description,
+        backapp.usertoken2id(preq.payorhash),
+        preq.payment,
+        preq.description,
+        preq.createdAt,
     )
-    presp.success = True
+    presp.success = bool(token)
+    if token is not None:
+        presp.token = token
+
+
+@api.route('/api/updatepayment')
+@proto_wrap(PBREQPayment, RESPsuccess)
+async def updatepayment(_req: Request, _resp: Response, *, preq: PBREQPayment, presp: RESPsuccess):
+    if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
+        print(f'updatepayment: {lm.current_member.id_int=}, {preq.pairhash} not valid')
+        return
+    success, msg = backpays.updatepayment(
+        preq.payhash,
+        preq.pairhash,
+        lm.current_member.id_int,
+        backapp.usertoken2id(preq.payorhash),
+        preq.payment,
+        preq.description,
+        preq.createdAt,
+    )
+    presp.success = success
+    presp.msg = msg
 
 
 @api.route('/api/getpaymentsinperiod')

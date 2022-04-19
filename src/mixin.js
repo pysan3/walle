@@ -122,10 +122,10 @@ export default {
       return Axios.post('/api/getpayinfo', { payhash })
         .then((response) => {
           const respdata = {
-            ...response.data,
+            ...response.data.payinfo,
             ...{
               payhash,
-              createdAt: new Date(response.data.created_at),
+              createdAt: new Date(response.data.payinfo.createdAt),
             },
           };
           store.commit('setPayData', respdata);

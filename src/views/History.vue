@@ -14,33 +14,38 @@
         </ion-toolbar>
       </ion-header>
       <ion-list>
-        <ion-item v-for="(p, payindex) in payList.slice().reverse()" :key="payindex">
+        <ion-item
+          v-for="(p, idx) in payList"
+          :key="idx"
+          style="cursor: pointer;"
+          @click="$router.push(`/update/${p.payhash}`)"
+        >
           <ion-label>
             <div class="d-flex align-items-baseline">
               <ion-chip outline class="mr-auto">
                 <ion-avatar>
                   <img
-                    :src="`${pairData.userinfos[p.payinfo.payorhash].icon}`"
-                    :alt="`${pairData.userinfos[p.payinfo.payorhash].username.slice(0, 1).toUpperCase()}`"
+                    :src="`${pairData.userinfos[p.payorhash].icon}`"
+                    :alt="`${pairData.userinfos[p.payorhash].username.slice(0, 1).toUpperCase()}`"
                     class="border border-light"
                   />
                 </ion-avatar>
-                <ion-label>{{ pairData.userinfos[p.payinfo.payorhash].username }}</ion-label>
+                <ion-label>{{ pairData.userinfos[p.payorhash].username }}</ion-label>
               </ion-chip>
               <h4 class="mx-1">
                 <ion-icon :src="$i('cloud-upload-outline')"></ion-icon>
-                {{ pairData.userinfos[p.payinfo.creatorhash].username }}
+                {{ pairData.userinfos[p.creatorhash].username }}
               </h4>
               <h4 class="mx-1">
                 <ion-icon :src="$i('calendar-number-outline')"></ion-icon>
-                {{ $_timeInLanguage(p.payinfo.createdAt, $t('Utils.spelltime')) }}
+                {{ $_timeInLanguage(p.createdAt, $t('Utils.spelltime')) }}
               </h4>
             </div>
             <div class="d-flex align-items-baseline">
               <h1 class="mx-2" style="min-width: 120px">
-                <ion-icon :src="$i('logo-yen')"></ion-icon> {{ $c(p.payinfo.payment) }}
+                <ion-icon :src="$i('logo-yen')"></ion-icon> {{ $c(p.payment) }}
               </h1>
-              <p>{{ p.payinfo.description }}</p>
+              <p>{{ p.description }}</p>
             </div>
           </ion-label>
         </ion-item>
@@ -59,7 +64,7 @@ export default {
   },
   computed: {
     payList() {
-      return (this.pairData.payments || []).map((e) => this.pairData.payinfos[e]);
+      return Object.values(this.pairData.payinfos || []).sort((a, b) => a.createdAt < b.createdAt);
     },
   },
   methods: {

@@ -1,4 +1,5 @@
 from typing import Tuple
+import sys
 from app.db_connector import *  # noqa
 from app.sqlalchemy_h import SessionContext
 from app import backpair, backapp
@@ -35,8 +36,14 @@ def decodePaymentHash(payhash: str) -> Tuple[int, int, int]:
     return data
 
 
-def addpayment(pairhash: str, userid: int, payor: int, payment: int, description: str = ''):
-    now = datetime.datetime.now()
+def addpayment(pairhash: str, userid: int, payor: int, payment: int, description: str = '', createdAt: str = ''):
+    try:
+        created_dt = datetime.datetime.fromisoformat(createdAt).replace(tzinfo=None)
+    except ValueError:
+        print(f'Invalid date format for {createdAt=}. ', file=sys.stderr)
+        created_dt = datetime.datetime.now()
+    if payment == 0:
+        return None
     with SessionContext() as session:
         new = Payments(
             pairid=backpair.pairhash2dbid(pairhash, session),
@@ -44,12 +51,52 @@ def addpayment(pairhash: str, userid: int, payor: int, payment: int, description
             payor=payor,
             creator=userid,
             description=description,
-            createdIn=int(DateInInt.from_yearmonth(now.year, now.month)),
-            created_at=created_at(),
+            createdIn=int(DateInInt.from_yearmonth(created_dt.year, created_dt.month)),
+            created_at=created_at(created_dt - datetime.datetime.now()),
         )
         session.add(new)
         session.flush()
         return generatePaymentHash(int(new.id), userid, payor)  # type: ignore
+
+
+def updatepayment(
+        payhash: str,
+        pairhash: str,
+        userid: int,
+        payor: int,
+        payment: int,
+        description: str = '',
+        createdAt: str = ''):
+    try:
+        payid, creator, payor = decodePaymentHash(payhash)
+    except Exception as e:
+        print(f'updatepayment: payhash invalid {payhash=}, errmsg: {e}', file=sys.stderr)
+        return False, 'Invalid payhash'
+    try:
+        created_dt = datetime.datetime.fromisoformat(createdAt.replace('Z', '+00:00')).replace(tzinfo=None)
+    except ValueError:
+        print(f'Invalid date format for {createdAt=}.', file=sys.stderr)
+        created_dt = datetime.datetime.now()
+    if payment == 0:
+        return False, f'Payment should be > 0. Payment sent: {payment}'
+    with SessionContext() as session:
+        data = session.query(Payments).get(payid)
+        if data is None:
+            return False, f'Data corresponding to {payhash=} not found.'
+        updatable = userid in [data.payor, data.creator]
+        if payment != data.payment and not updatable:
+            return False, 'User does not have permission to change `payment`'
+        if payor != data.payor and not updatable:
+            return False, 'User does not have permission to change `payor`'
+        prev_created_dt = datetime.datetime.fromisoformat(data.created_at).replace(tzinfo=None)
+        if created_dt.date() == prev_created_dt.date() and not updatable:
+            return False, 'User does not have permission to change `created datetime`'
+        data.payment = payment
+        data.payor = payor
+        data.description = description
+        data.createdIn = int(DateInInt.from_yearmonth(created_dt.year, created_dt.month))
+        data.created_at = created_at(created_dt - datetime.datetime.now())
+        return True, ''
 
 
 def getPaysInPeriod(pfrom: int = 0, duration: int = 0, *, pairhash: Optional[str] = None, pairid: Optional[int] = None):

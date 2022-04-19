@@ -51,30 +51,32 @@
             </ion-label>
             <ion-label>
               <p>diff:</p>
-              <h1 class="mx-auto text-center">{{ paySums[uhash] - payAllSum }}</h1>
+              <h1 class="mx-auto text-center">{{ 2 * paySums[uhash] - payAllSum }}</h1>
             </ion-label>
           </ion-col>
         </ion-row>
         <ion-list class="border-top">
           <ion-item
-            v-for="(p, idx) in pairData.payments.map((e) => pairData.payinfos[e])"
+            v-for="(p, idx) in payListRev"
             :key="idx"
             class="d-flex align-items-center"
+            style="cursor: pointer;"
+            @click="$router.push(`/update/${p.payhash}`)"
           >
-            <div class="text-secondary">{{ new Date(p.payinfo.createdAt).getDate() }}</div>
+            <div class="text-secondary">{{ new Date(p.createdAt).getDate() }}</div>
             <ion-chip outline class="">
               <ion-avatar>
                 <img
-                  :src="`${pairData.userinfos[p.payinfo.payorhash].icon}`"
-                  :alt="`${pairData.userinfos[p.payinfo.payorhash].username.slice(0, 1).toUpperCase()}`"
+                  :src="`${pairData.userinfos[p.payorhash].icon}`"
+                  :alt="`${pairData.userinfos[p.payorhash].username.slice(0, 1).toUpperCase()}`"
                   class="border border-light"
                 />
               </ion-avatar>
             </ion-chip>
-            <div class="text-nowrap text-truncate">{{ p.payinfo.description }}</div>
+            <div class="text-nowrap text-truncate">{{ p.description }}</div>
             <div class="ml-auto">
               <ion-icon :src="$i('logo-yen')"></ion-icon>
-              {{ $c(p.payinfo.payment) }}
+              {{ $c(p.payment) }}
             </div>
           </ion-item>
         </ion-list>
@@ -112,6 +114,9 @@ export default defineComponent({
     dateInInt() {
       return this.currentYear * 100 + this.currentMonth;
     },
+    payListRev() {
+      return Object.values(this.pairData.payinfos || []).sort((a, b) => a.createdAt > b.createdAt);
+    },
   },
   methods: {
     search(ev) {
@@ -134,8 +139,8 @@ export default defineComponent({
       this.payAllSum = 0;
       this.pairData.userhashes.forEach((e) => { this.paySums[e] = 0; });
       Object.values(this.pairData.payinfos).forEach((p) => {
-        this.paySums[p.payinfo.payorhash] += p.payinfo.payment;
-        this.payAllSum += p.payinfo.payment;
+        this.paySums[p.payorhash] += p.payment;
+        this.payAllSum += p.payment;
       });
     },
   },

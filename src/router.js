@@ -9,7 +9,7 @@ const routerMap = (route, isView) => {
   const ret = {
     ...route,
     ...{
-      name: route.component.toLowerCase(),
+      name: route.name || route.component.toLowerCase(),
       component: () => import(`@/${isView ? 'views' : 'components'}/${route.component}.vue`),
       meta: {
         requiredAuth: route.requiredAuth === true,
@@ -28,7 +28,13 @@ const topChildren = [
   { path: 'settings', component: 'Settings', requiredAuth: true },
 ];
 const routerOptions = [
-  { path: '/new', component: 'NewItem', requiredAuth: true },
+  { path: '/new', component: 'NewPayment', requiredAuth: true },
+  {
+    path: '/update/:payhash',
+    name: 'updatepayment',
+    component: 'NewPayment',
+    requiredAuth: true,
+  },
   { path: '/newpair', component: 'NewPair', requiredAuth: true },
   { path: '/tryaccess/:page', component: 'TryAccess', requiredAuth: false },
   { path: '/:pathMatch(.*)*', component: 'Top', children: topChildren.map((e) => routerMap(e, true)) },

@@ -69,6 +69,9 @@ const mutations = Object.assign(mutationsDefault, {
   setPayData(state, data) {
     state.payDatas[data.payhash] = data;
   },
+  removePayData(state, data) {
+    state.payDatas[data.payhash] = undefined;
+  },
   setCurrentPairHash(state, data) {
     state.currentPairHash = data;
     localStorage.setItem('WALLE_CURRENTPAIRHASH', data);

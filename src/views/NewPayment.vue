@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-back-button default-href="/"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ $t('Newitem.newitem') }}</ion-title>
+        <ion-title>{{ $t(`Newitem.${$route.name}`) }}</ion-title>
         <ion-buttons slot="end">
           <ion-button color="medium" href="/">
             <ion-icon class="mx-2" :src="$i('home')"></ion-icon>
@@ -21,7 +21,7 @@
               {{ $t('Newitem.payor') }}: {{ pairData.userinfos[this.payorhash].username || '?' }}
             </ion-label>
             <ion-item v-for="(userhash, index) in pairData.userhashes" :key="index">
-              <ion-radio slot="start" :value="userhash"></ion-radio>
+              <ion-radio slot="start" :value="userhash" :disabled="!updatable"></ion-radio>
               <ion-chip outline>
                 <ion-avatar>
                   <img
@@ -44,6 +44,7 @@
             spellcheck="false"
             autocapitalize="off"
             required
+            :readonly="!updatable"
           ></ion-input>
         </ion-item>
         <ion-item>
@@ -56,29 +57,40 @@
             autocapitalize="off"
           ></ion-textarea>
           <ion-list>
-            <ion-label class="ml-3" position="stacked" color="primary">: {{ $t('Newitem.templates') }}</ion-label>
-            <ion-item
-              v-for="pay in pairData.payments
-                .slice(-8)
-                .reverse()
-                .map((e) => pairData.payinfos[e].payinfo)"
-              :key="pay"
-              v-show="pay.description"
-              @click="description += pay.description"
-            >
-              <p class="m-0 p-0">・{{ pay.description }}</p>
+            <ion-label class="ml-3" position="stacked" color="primary">^ {{ $t('Newitem.templates') }}</ion-label>
+            <ion-item v-for="(pDesc, idx) in uniqueRevDesc" :key="idx" v-show="pDesc" @click="description += pDesc">
+              <p class="m-0 p-0">・{{ pDesc }}</p>
             </ion-item>
           </ion-list>
         </ion-item>
+        <ion-item>
+          <ion-label class="ml-3" position="stacked" color="primary">{{ $t('Newitem.date') }}</ion-label>
+          <ion-datetime v-model="createdAt" presentation="date" :disabled="!updatable"></ion-datetime>
+        </ion-item>
       </ion-list>
-      <ion-button class="px-3 my-2" @click="submit()" expand="block">{{ $t('Newitem.submit') }}</ion-button>
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button @click="submit()">
+          <ion-icon :src="$i('chevron-forward-circle-outline')"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
     </ion-content>
   </ion-page>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
-import { IonItem, IonLabel, IonList, IonRadio, IonRadioGroup, IonInput, IonTextarea } from '@ionic/vue';
+import {
+  IonItem,
+  IonLabel,
+  IonList,
+  IonRadio,
+  IonRadioGroup,
+  IonInput,
+  IonTextarea,
+  IonFab,
+  IonFabButton,
+  IonDatetime,
+} from '@ionic/vue';
 import Axios from '@/axios';
 
 export default defineComponent({
@@ -91,6 +103,9 @@ export default defineComponent({
     IonRadioGroup,
     IonInput,
     IonTextarea,
+    IonFab,
+    IonFabButton,
+    IonDatetime,
   },
   data() {
     return {
@@ -98,27 +113,66 @@ export default defineComponent({
       payment: undefined,
       description: '',
       pairData: undefined,
+      createdAt: new Date().toISOString(),
+      payhash: '',
     };
+  },
+  computed: {
+    uniqueRevDesc() {
+      const descSet = new Set();
+      return this.pairData.payments
+        .map((e) => this.pairData.payinfos[e].description)
+        .reverse()
+        .filter((e) => {
+          if (descSet.has(e)) return false;
+          descSet.add(e);
+          return true;
+        })
+        .slice(0, 5);
+    },
+    updatable() {
+      return (
+        this.$route.name !== 'updatepayment'
+        || this.pairData.payinfos[this.payhash].creatorhash === this.$store.getters.getMyUserInfo.usertoken
+        || this.pairData.payinfos[this.payhash].payorhash === this.$store.getters.getMyUserInfo.usertoken
+      );
+    },
   },
   methods: {
     submit() {
-      Axios.post('/api/addpayment', {
-        payment: {
-          pairhash: this.$store.getters.getCurrentPairHash,
-          payorhash: this.payorhash,
-          payment: this.payment,
-          description: this.description,
-        },
+      Axios.post(`/api/${this.$route.name}`, {
+        payhash: this.payhash,
+        pairhash: this.$store.getters.getCurrentPairHash,
+        payorhash: this.payorhash,
+        payment: this.payment,
+        description: this.description,
+        createdAt: this.createdAt,
       }).then((response) => {
         if (response.data.success) {
-          this.$router.back();
           this.$store.commit('removePairData', { pairhash: this.$store.getters.getCurrentPairHash });
+          if (this.$route.name === 'newpayment') this.payhash = response.data.token;
+          this.$store.commit('removePayData', { payhash: this.payhash });
+          this.$router.back();
+        } else {
+          alert(response.data.msg);
         }
       });
+    },
+    updateInputs(payhash) {
+      this.payhash = payhash;
+      const payinfo = this.pairData.payinfos[payhash];
+      this.payorhash = payinfo.payorhash;
+      this.payment = payinfo.payment;
+      this.description = payinfo.description;
+      this.createdAt = payinfo.createdAt.toISOString();
+      this.payhash = payinfo.payhash;
     },
   },
   async created() {
     this.pairData = await this.$_completePairData(this.$store.getters.getCurrentPairHash);
+    if (this.$route.name === 'updatepayment') {
+      this.updateInputs(this.$route.params.payhash);
+    }
   },
 });
 </script>

@@ -6,6 +6,8 @@ message PBREQPayment {
   required string payorhash = 2;
   required int32 payment = 3;
   optional string description = 4;
+  optional string createdAt = 5;
+  optional string payhash = 6;
 }
 
 message PBUserData {
@@ -42,10 +44,6 @@ message REQpairinfo {
   required string pairhash = 1;
   optional int32 pfrom = 2;
   optional int32 duration = 3;
-}
-
-message REQaddpayment {
-  required PBREQPayment payment = 1;
 }
 
 message REQpayinfo {
