@@ -70,7 +70,7 @@
       </ion-list>
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button @click="submit()">
-          <ion-icon :src="$i('chevron-forward-circle-outline')"></ion-icon>
+          <ion-icon :src="$i('send-sharp')"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
