@@ -128,8 +128,6 @@ class VueI18nDict:
 
 
 if __name__ == "__main__":
-    env = DotEnvParser('.env')
-
     parser = argparse.ArgumentParser(description='upload .md to your webpage')
     parser.add_argument('-y', '--yes', action='store_true', help='pass yes to all verifications')
     parser.add_argument('--lang', action='store_true', help='language json')
