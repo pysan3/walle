@@ -61,7 +61,7 @@ export default {
     },
     acceptPair(pairhash) {
       this.connecting = true;
-      Axios.post('/api/acceptpair', { pairhash }).then(response => {
+      Axios.post('/api/acceptpair', { pairhash }).then((response) => {
         if (response.data.success) {
           this.pairList[pairhash].accepted = true;
         }
@@ -73,16 +73,14 @@ export default {
     },
   },
   async created() {
-    this.pairList = await Axios.post('/api/mypairs', {}).then(async r =>
-      Object.fromEntries(
-        await Promise.all(
-          r.data.pairs.map(async pidx => [
-            pidx.pairhash,
-            { ...(await this.$_completePairData(pidx.pairhash)), ...pidx },
-          ])
-        )
-      )
-    );
+    this.pairList = await Axios.post('/api/mypairs', {}).then(async (r) => Object.fromEntries(
+      await Promise.all(
+        r.data.pairs.map(async (pidx) => [
+          pidx.pairhash,
+          { ...(await this.$_completePairData(pidx.pairhash)), ...pidx },
+        ]),
+      ),
+    ));
   },
 };
 </script>
