@@ -87,6 +87,7 @@ export default defineComponent({
         })
         .flat()
         .filter((e) => e !== this.$store.getters.getMyUserInfo.usertoken)
+        .filter((v, i, a) => a.indexOf(v) === i) // unique
         .sort((a, b) => this.userinfos[a].username.localeCompare(this.userinfos[b].username));
     },
   },
