@@ -29,8 +29,9 @@ COPY command.sh edit.py .env ./
 COPY alembic.ini ./
 COPY protobuf/ ./protobuf/
 COPY app/ ./app/
-COPY src/ ./src/
+COPY utils/ ./utils/
 COPY migration/ ./migration/
+COPY src/ ./src/
 
 RUN ./command.sh --protoc -i
 
