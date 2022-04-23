@@ -50,3 +50,13 @@ message REQpayinfo {
   required string payhash = 1;
 }
 
+message REQuploadpayphoto {
+  required string payhash = 1;
+  required string data64 = 2;
+  required string format = 3;
+}
+
+message REQdeletepayphoto {
+  required string photopath = 1;
+}
+

@@ -1,6 +1,6 @@
 <template>
-  <ion-page v-if="pairData">
-    <ion-header>
+  <ion-page>
+    <ion-header v-if="pairData">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-back-button default-href="/"></ion-back-button>
@@ -13,7 +13,7 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content v-if="pairData">
       <ion-list class="my-3">
         <ion-item>
           <ion-radio-group v-model="payorhash">
@@ -64,11 +64,33 @@
           </ion-list>
         </ion-item>
         <ion-item>
-          <ion-label class="ml-3" position="stacked" color="primary">{{ $t('Newitem.date') }}</ion-label>
+          <ion-label position="stacked" color="primary">{{ $t('Newitem.date') }}</ion-label>
           <ion-datetime v-model="createdAt" presentation="date" :disabled="!updatable"></ion-datetime>
         </ion-item>
+        <ion-item>
+          <ion-label position="stacked" color="primary">{{ $t('Newitem.photos') }}</ion-label>
+          <ion-item v-for="(photo, idx) in payPhotos" :key="idx">
+            <div class="rounded border border-secondary p-2" style="position: relative;">
+              <a @click="deletePayPhoto(photo)" class="clipboard h4 leader" style="cursor: pointer;">
+                <ion-icon :src="$i('trash-outline')"></ion-icon>
+              </a>
+              <img :src="photo" alt="Payment Photo, Unreachable" />
+            </div>
+          </ion-item>
+          <ion-item v-for="(photo, idx) in newPhotos" :key="idx">
+            <div class="rounded border border-secondary p-2" style="position: relative;">
+              <a @click="deleteNewPhoto(idx)" class="clipboard h4 leader" style="cursor: pointer;">
+                <ion-icon :src="$i('trash-outline')"></ion-icon>
+              </a>
+              <img :src="`data:image/${photo.format};base64,${photo.data64}`" alt="Possibly Invalid Format" />
+            </div>
+          </ion-item>
+        </ion-item>
       </ion-list>
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="d-flex">
+        <ion-fab-button @click="bootCamera()" class="mr-3" color="dark">
+          <ion-icon :src="$i('camera-sharp')"></ion-icon>
+        </ion-fab-button>
         <ion-fab-button @click="submit()">
           <ion-icon :src="$i('send-sharp')"></ion-icon>
         </ion-fab-button>
@@ -91,6 +113,7 @@ import {
   IonFabButton,
   IonDatetime,
 } from '@ionic/vue';
+import { Camera, CameraResultType } from '@capacitor/camera';
 import Axios from '@/axios';
 
 export default defineComponent({
@@ -115,6 +138,8 @@ export default defineComponent({
       pairData: undefined,
       createdAt: new Date().toISOString(),
       payhash: '',
+      payPhotos: [],
+      newPhotos: [],
     };
   },
   computed: {
@@ -139,6 +164,37 @@ export default defineComponent({
     },
   },
   methods: {
+    async bootCamera() {
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Base64,
+        allowEditing: true,
+        quality: 100,
+      });
+      this.newPhotos.push({
+        data64: photo.base64String,
+        format: photo.format,
+        payhash: this.payhash,
+      });
+    },
+    deleteNewPhoto(idx) {
+      alert(this.$t('Utils.rusure'));
+      this.newPhotos.splice(idx, 1);
+    },
+    deletePayPhoto(photo) {
+      alert(this.$t('Utils.rusure'));
+      Axios.post('/api/deletepayphoto', {
+        photopath: photo,
+      }).then((response) => {
+        if (!response.data.success) {
+          alert('Something went wrong');
+          return;
+        }
+        const index = this.payPhotos.indexOf(photo);
+        if (index !== -1) {
+          this.payPhotos.splice(index, 1);
+        }
+      });
+    },
     submit() {
       Axios.post(`/api/${this.$route.name}`, {
         payhash: this.payhash,
@@ -151,8 +207,21 @@ export default defineComponent({
         if (response.data.success) {
           this.$store.commit('removePairData', { pairhash: this.$store.getters.getCurrentPairHash });
           if (this.$route.name === 'newpayment') this.payhash = response.data.token;
-          this.$store.commit('removePayData', { payhash: this.payhash });
-          this.$router.back();
+          Promise.all(
+            this.newPhotos
+              .filter((e) => e)
+              .map((e) => Axios.post('/api/uploadpayphoto', e)
+                .then((response) => {
+                  if (!response.data.success) alert(response.data.msg);
+                  return response.data.success;
+                })
+                .catch((err) => alert(err))),
+          ).then((success) => {
+            if (success) {
+              this.$store.commit('removePayData', { payhash: this.payhash });
+              this.$router.back();
+            }
+          });
         } else {
           alert(response.data.msg);
         }
@@ -166,6 +235,7 @@ export default defineComponent({
       this.description = payinfo.description;
       this.createdAt = payinfo.createdAt.toISOString();
       this.payhash = payinfo.payhash;
+      this.payPhotos.push(...payinfo.photopath);
     },
   },
   async created() {
@@ -173,6 +243,13 @@ export default defineComponent({
     if (this.$route.name === 'updatepayment') {
       this.updateInputs(this.$route.params.payhash);
     }
+    console.log(this.pairData);
   },
 });
 </script>
+
+<style lang="stylus" scoped>
+.clipboard
+  position absolute
+  right .5rem
+</style>

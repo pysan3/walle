@@ -60,7 +60,9 @@
 
 <script>
 import { defineComponent } from 'vue';
-import { IonItem, IonLabel, IonList, IonText, IonInput, IonButton } from '@ionic/vue';
+import {
+  IonItem, IonLabel, IonList, IonText, IonInput, IonButton,
+} from '@ionic/vue';
 import Axios from '@/axios';
 
 export default defineComponent({

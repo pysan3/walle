@@ -1,14 +1,14 @@
 import datetime as dt
 import hashlib
 import secrets
-from pathlib import Path
 
 from app.db_connector import *  # noqa
 from app.sqlalchemy_h import SessionContext
 from app.websession_manager import WebSessionToken
+from utils.staticFiles import staticFileDir, staticRef
 
-staticFileDir = Path('./dist')
-staticFileDir.mkdir(parents=True, exist_ok=True)
+usericonsDir = staticFileDir / 'usericons'
+usericonsDir.mkdir(parents=True, exist_ok=True)
 
 
 def login(username: str, password: str):
@@ -27,14 +27,12 @@ def signup(username: str, password: str, email: str):
     with SessionContext() as session:
         if len(session.query(Users).filter_by(username=username).all()) != 0:
             return None
-    usericonsDir = staticFileDir / 'usericons'
-    usericonsDir.mkdir(parents=True, exist_ok=True)
     new = Users(
         username=username,
         password=hashlib.sha256(password.encode()).hexdigest(),
         created_at=dt.datetime.now().isoformat(' ', 'seconds'),
         usertoken=secrets.token_urlsafe(),
-        icon=str((usericonsDir / f'{username}.jpg')),
+        icon=str(staticRef(usericonsDir / f'{username}.jpg')),
         email=email,
     )
     with SessionContext() as session:

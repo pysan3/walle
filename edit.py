@@ -2,17 +2,18 @@ try:
     from utils.tmp_db_data import default_infos
 except Exception:
     default_infos = {}
-from app.db_connector import *  # noqa
-from app.sqlalchemy_h import Base, engine, SessionContext
-from app import backapp, backpair, backpays
 import argparse
 import datetime as dt
 import json
 import os
-from pathlib import Path
 from rich import print
 from rich.console import Console
 from rich.table import Table  # type: ignore
+
+from utils.staticFiles import Path
+from app.db_connector import *  # noqa
+from app.sqlalchemy_h import Base, engine, SessionContext
+from app import backapp, backpair, backpays
 
 checkyes = False
 console = Console()

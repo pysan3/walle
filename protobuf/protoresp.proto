@@ -13,6 +13,7 @@ message PBRESPPayment {
   optional string description = 4;
   required string createdAt = 5;
   required string creatorhash = 6;
+  repeated string photopath = 7;
 }
 
 message RESPtoken {
@@ -38,9 +39,5 @@ message RESPpairinfo {
 
 message RESPgetpaymentlist {
   repeated string payhashlist = 1;
-}
-
-message RESPgetpayinfo {
-  required PBRESPPayment payinfo = 1;
 }
 

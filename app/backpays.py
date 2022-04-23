@@ -1,9 +1,16 @@
 from typing import Tuple
 import sys
+import uuid
+import base64
 from app.db_connector import *  # noqa
 from app.sqlalchemy_h import SessionContext
 from app import backpair, backapp
 from app.hashids import payHM
+from utils.photoUtils import compressJPG, compressPNG
+from utils.staticFiles import staticRef, staticBaseDir
+
+payPhotoDir = backapp.staticFileDir / 'payphotos'
+payPhotoDir.mkdir(parents=True, exist_ok=True)
 
 
 class DateInInt:
@@ -129,3 +136,48 @@ def getPayInfo(hashing: bool = False, *, payid: Optional[int] = None, payhash: O
             datadict['creatorhash'] = backapp.userid2token(datadict.pop('creator'))
             datadict['pairhash'] = session.query(Pairs).get(datadict.pop('pairid')).pairhash
         return datadict
+
+
+def getPayPhotos(*, payid: Optional[int] = None, payhash: Optional[str] = None):
+    if payhash is None and payid is None:
+        raise Exception(f'{payhash=} or {payid=} must be non-none value')
+    with SessionContext() as session:
+        if payhash is not None:
+            payid = decodePaymentHash(payhash)[0]
+        return [p.photopath for p in session.query(PaymentPhotos).filter_by(payid=payid).all()]
+
+
+def uploadPayPhoto(data64: str, format: str = 'jpeg', *, payid: Optional[int] = None, payhash: Optional[str] = None):
+    if payhash is None and payid is None:
+        raise Exception(f'{payhash=} or {payid=} must be non-none value')
+    filepath = payPhotoDir / (str(uuid.uuid4()) + f'.{format}')
+    data = base64.b64decode(data64)
+    if format.lower() in ['jpg', 'jpeg']:
+        data = compressJPG(data)
+    elif format.lower() == 'png':
+        data = compressPNG(data)
+    with filepath.open('wb') as f:
+        f.write(data)
+    with SessionContext() as session:
+        if payhash is not None:
+            payid = decodePaymentHash(payhash)[0]
+        session.add(PaymentPhotos(
+            payid=payid,
+            photopath=str(staticRef(filepath)),
+        ))
+        return str(filepath)
+
+
+def deletePayPhoto(photopath: str):
+    filepath = staticBaseDir / photopath
+    if filepath.exists():
+        filepath.unlink()
+    else:
+        return False
+    with SessionContext() as session:
+        data = session.query(PaymentPhotos).filter_by(photopath=str(staticRef(filepath))).one_or_none()
+        if data is not None:
+            session.delete(data)
+        else:
+            return False
+    return True

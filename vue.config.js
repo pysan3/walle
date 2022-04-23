@@ -7,6 +7,10 @@ module.exports = {
         target: 'http://localhost:5042',
         changeOrigin: true,
       },
+      '^/dist': {
+        target: 'http://localhost:5042',
+        changeOrigin: true,
+      },
     },
   },
 };

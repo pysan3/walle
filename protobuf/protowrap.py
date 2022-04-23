@@ -36,14 +36,17 @@ def proto_wrap(req_class: MessageType, resp_class: MessageType, fn: Callable = N
             presp = resp_class()
         kwargs['presp'] = presp
 
-        print(f'req: [cyan]{fn.__name__}[/], {url_params=}, {preq=}')
+        log_msg = f'req: [cyan]{fn.__name__}[/], {url_params=},\npreq:\n{preq}'
+        if len(log_msg) >= 100:
+            log_msg = log_msg[:100] + '...'
+        print(log_msg)
         result = await fn(req, resp, *args, **kwargs)
         if presp is not None:
             # ifdef serialized connection enabled
             # resp.content = presp.SerializeToString()
             # else
             pdict = json_format.MessageToDict(presp, including_default_value_fields=True)
-            print(f'presp: {presp=} => {pdict=}')
+            print(f'{presp=} => {pdict=}')
             if resp.media is None:
                 resp.media = pdict
             else:

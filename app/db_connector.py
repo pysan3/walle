@@ -92,6 +92,23 @@ class Payments(Base):
         }
 
 
+class PaymentPhotos(Base):
+    __tablename__ = 'paymentphotos'
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    payid = Column('payid', Integer)
+    photopath = Column('photopath', Text)
+
+    privacy_settings = {}
+
+    def get_dict(self, privacy_level: int = -1, delete: List[str] = []) -> Dict[str, Any]:
+        data = DBtoDict(self, delete)
+        data = DBtoJSON(data, [])
+        return {
+            k: v if self.privacy_settings.get(k, privacy_level) >= privacy_level else None
+            for k, v in data.items()
+        }
+
+
 class TokenTable(Base):
     __tablename__ = 'tokentable'
     id = Column('id', Integer, primary_key=True, autoincrement=True)

@@ -10,6 +10,7 @@
             "newpayment": "New Item",
             "payment": "Cost",
             "payor": "Payor",
+            "photos": "Photos",
             "submit": "Submit",
             "templates": "Choose From Templates",
             "updatepayment": "Update Item"
@@ -40,6 +41,7 @@
         "Utils": {
             "add": "Add",
             "pairselect": "Select Pair",
+            "rusure": "Are you sure?",
             "spelltime": "%m/%d/%Y",
             "yen": "Yen"
         }
@@ -55,6 +57,7 @@
             "newpayment": "\u65b0\u898f\u767b\u9332",
             "payment": "\u91d1\u984d",
             "payor": "\u652f\u6255\u8005",
+            "photos": "\u30a2\u30c3\u30d7\u30ed\u30fc\u30c9",
             "submit": "\u767b\u9332",
             "templates": "\u5c65\u6b74\u304b\u3089\u9078\u3076",
             "updatepayment": "\u5909\u66f4"
@@ -85,6 +88,7 @@
         "Utils": {
             "add": "\u8ffd\u52a0\u3059\u308b",
             "pairselect": "\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044",
+            "rusure": "\u672c\u5f53\u306b\u3088\u308d\u3057\u3044\u3067\u3059\u304b\uff1f",
             "spelltime": "%Y/%m/%d",
             "yen": "\u5186"
         }

@@ -69,6 +69,7 @@ async def getmyuserinfo(_req: Request, _resp: Response, *, preq: REQnone, presp:
 
 
 @api.route('/api/getuserinfo')
+@lm.login_required
 @proto_wrap(REQasignpair, PBUserData)
 async def getuserinfo(_req: Request, _resp: Response, *, preq: REQasignpair, presp: PBUserData):
     print(f'{preq=}')
@@ -89,10 +90,12 @@ async def requestpair(_req: Request, _resp: Response, *, preq: REQrequestpair, p
 
 
 @api.route('/api/acceptpair')
+@lm.login_required
 @proto_wrap(REQpairinfo, RESPsuccess)
 async def acceptpair(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: RESPsuccess):
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
         print(f'acceptpair: {lm.current_member.id_int=}, {preq.pairhash} not valid')
+        _resp.status_code = 422  # Invalid Access
         return
     backpair.acceptpair(lm.current_member.id_int, pairhash=preq.pairhash)
     presp.success = True
@@ -107,10 +110,12 @@ async def mypairs(_req: Request, _resp: Response, *, preq: REQnone, presp: RESPm
 
 
 @api.route('/api/pairinfo')
+@lm.login_required
 @proto_wrap(REQpairinfo, RESPpairinfo)
 async def pairinfo(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: RESPpairinfo):
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
         print(f'pairinfo: {lm.current_member.id_int=}, {preq.pairhash} not valid')
+        _resp.status_code = 422  # Invalid Access
         return
     # presp.userhashes.extend(backpair.getpairlist(preq.pairhash))
     data = backpair.getPairData(preq.pairhash)
@@ -119,10 +124,12 @@ async def pairinfo(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: 
 
 
 @api.route('/api/newpayment')
+@lm.login_required
 @proto_wrap(PBREQPayment, RESPtoken)
 async def newpayment(_req: Request, _resp: Response, *, preq: PBREQPayment, presp: RESPtoken):
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
         print(f'newpayment: {lm.current_member.id_int=}, {preq.pairhash} not valid')
+        _resp.status_code = 422  # Invalid Access
         return
     token = backpays.addpayment(
         preq.pairhash,
@@ -138,10 +145,12 @@ async def newpayment(_req: Request, _resp: Response, *, preq: PBREQPayment, pres
 
 
 @api.route('/api/updatepayment')
+@lm.login_required
 @proto_wrap(PBREQPayment, RESPsuccess)
 async def updatepayment(_req: Request, _resp: Response, *, preq: PBREQPayment, presp: RESPsuccess):
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
         print(f'updatepayment: {lm.current_member.id_int=}, {preq.pairhash} not valid')
+        _resp.status_code = 422  # Invalid Access
         return
     success, msg = backpays.updatepayment(
         preq.payhash,
@@ -157,20 +166,45 @@ async def updatepayment(_req: Request, _resp: Response, *, preq: PBREQPayment, p
 
 
 @api.route('/api/getpaymentsinperiod')
+@lm.login_required
 @proto_wrap(REQpairinfo, RESPgetpaymentlist)
 async def getpaymentsinperiod(_req: Request, _resp: Response, *, preq: REQpairinfo, presp: RESPgetpaymentlist):
     if not backpair.validPairAccess(lm.current_member.id_int, preq.pairhash):
         print(f'getpaymentlist: {lm.current_member.id_int=}, {preq.pairhash} not valid')
+        _resp.status_code = 422  # Invalid Access
         return
     presp.payhashlist.extend(backpays.getPaysInPeriod(preq.pfrom, preq.duration, pairhash=preq.pairhash))
 
 
 @api.route('/api/getpayinfo')
-@proto_wrap(REQpayinfo, RESPgetpayinfo)
-async def getpayinfo(_req: Request, _resp: Response, *, preq: REQpayinfo, presp: RESPgetpayinfo):
+@lm.login_required
+@proto_wrap(REQpayinfo, PBRESPPayment)
+async def getpayinfo(_req: Request, _resp: Response, *, preq: REQpayinfo, presp: PBRESPPayment):
     data = backpays.getPayInfo(hashing=True, payhash=preq.payhash)
+    if not backpair.validPairAccess(lm.current_member.id_int, data['pairhash']):
+        print(f'getpayinfo: {lm.current_member.id_int=}, {preq.payhash=}, {data["pairhash"]=} not valid')
+        _resp.status_code = 422  # Invalid Access
+        return
     data['createdAt'] = data.pop('created_at')
-    presp.payinfo.MergeFrom(json_format.ParseDict(data, PBRESPPayment(), ignore_unknown_fields=True))
+    presp.MergeFrom(json_format.ParseDict(data, PBRESPPayment(), ignore_unknown_fields=True))
+    presp.photopath.extend(backpays.getPayPhotos(payhash=preq.payhash))
+
+
+@api.route('/api/uploadpayphoto')
+@proto_wrap(REQuploadpayphoto, RESPsuccess)
+async def uploadpayphoto(_req: Request, _resp: Response, *, preq: REQuploadpayphoto, presp: RESPsuccess):
+    try:
+        presp.msg = backpays.uploadPayPhoto(preq.data64, preq.format, payhash=preq.payhash)
+        presp.success = True
+    except Exception as e:
+        presp.msg = f'Error: {e}'
+        presp.success = False
+
+
+@api.route('/api/deletepayphoto')
+@proto_wrap(REQdeletepayphoto, RESPsuccess)
+async def deletepayphoto(_req: Request, _resp: Response, *, preq: REQdeletepayphoto, presp: RESPsuccess):
+    presp.success = backpays.deletePayPhoto(preq.photopath)
 
 if __name__ == '__main__':
     api.run(port=5042, address='0.0.0.0')
