@@ -210,12 +210,20 @@ export default defineComponent({
           Promise.all(
             this.newPhotos
               .filter((e) => e)
-              .map((e) => Axios.post('/api/uploadpayphoto', e)
-                .then((response) => {
-                  if (!response.data.success) alert(response.data.msg);
-                  return response.data.success;
+              .map(async (e) => {
+                const formData = new FormData();
+                Object.entries(e).forEach(([k, v]) => formData.set(k, v));
+                return Axios.post('/api/uploadpayphoto', formData, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data',
+                  },
                 })
-                .catch((err) => alert(err))),
+                  .then((response) => {
+                    if (!response.data.success) alert(response.data.msg);
+                    return response.data.success;
+                  })
+                  .catch((err) => alert(err));
+              }),
           ).then((success) => {
             if (success) {
               this.$store.commit('removePayData', { payhash: this.payhash });

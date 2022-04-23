@@ -191,17 +191,28 @@ async def getpayinfo(_req: Request, _resp: Response, *, preq: REQpayinfo, presp:
 
 
 @api.route('/api/uploadpayphoto')
-@proto_wrap(REQuploadpayphoto, RESPsuccess)
-async def uploadpayphoto(_req: Request, _resp: Response, *, preq: REQuploadpayphoto, presp: RESPsuccess):
+@lm.login_required
+async def uploadpayphoto(req: Request, resp: Response):
     try:
+        data = await req.media(format='files')
+        preq: REQuploadpayphoto = json_format.ParseDict(
+            {k: v.decode('utf-8') for k, v in data.items()},
+            REQuploadpayphoto(),
+            ignore_unknown_fields=True
+        )
+        presp = RESPsuccess()
         presp.msg = backpays.uploadPayPhoto(preq.data64, preq.format, payhash=preq.payhash)
         presp.success = True
     except Exception as e:
+        presp = RESPsuccess()
         presp.msg = f'Error: {e}'
         presp.success = False
+    finally:
+        resp.media = json_format.MessageToDict(presp, including_default_value_fields=True)
 
 
 @api.route('/api/deletepayphoto')
+@lm.login_required
 @proto_wrap(REQdeletepayphoto, RESPsuccess)
 async def deletepayphoto(_req: Request, _resp: Response, *, preq: REQdeletepayphoto, presp: RESPsuccess):
     presp.success = backpays.deletePayPhoto(preq.photopath)
