@@ -19,7 +19,7 @@ services:
       - ./app:/www/app
       - ./utils:/www/utils
       - ./migration:/www/migration
-      - ./dist:/www/static/dist
+      - /data/www/walle/dist:/www/static/dist
     environment:
       - WALLE_HASHID_SALT=${WALLE_HASHID_SALT:-WALLE_HASHID_SALT}
       - WALLE_LM_ACCOUNT_COOKIENAME=${WALLE_LM_ACCOUNT_COOKIENAME:-WALLE_HASHID_SALT}
