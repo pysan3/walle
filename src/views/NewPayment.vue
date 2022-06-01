@@ -251,7 +251,6 @@ export default defineComponent({
     if (this.$route.name === 'updatepayment') {
       this.updateInputs(this.$route.params.payhash);
     }
-    console.log(this.pairData);
   },
 });
 </script>
