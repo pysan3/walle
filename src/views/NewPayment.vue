@@ -173,7 +173,6 @@ export default defineComponent({
       this.newPhotos.push({
         data64: photo.base64String,
         format: photo.format,
-        payhash: this.payhash,
       });
     },
     deleteNewPhoto(idx) {
@@ -213,6 +212,7 @@ export default defineComponent({
               .map(async (e) => {
                 const formData = new FormData();
                 Object.entries(e).forEach(([k, v]) => formData.set(k, v));
+                formData.set('payhash', this.payhash);
                 return Axios.post('/api/uploadpayphoto', formData, {
                   headers: {
                     'Content-Type': 'multipart/form-data',
