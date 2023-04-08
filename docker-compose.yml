@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     tty: true
-    restart: always
+    restart: unless-stopped
     ports:
       - 6019:5042
     volumes:
